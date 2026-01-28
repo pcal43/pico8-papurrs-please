@@ -1,5 +1,8 @@
-# gradle
 
+
+/#*
+
+*~
 .gradle/
 build/
 out/
@@ -30,4 +33,11 @@ bin/
 
 # fabric
 
-run*/
+run/
+
+/pico8-home/log.txt
+/pico8-home/activity_log.txt
+/pico8-home/backup/*
+/pico8-home/config.txt
+/pico8-home/favourites.txt
+/pico8-home/cdata/
