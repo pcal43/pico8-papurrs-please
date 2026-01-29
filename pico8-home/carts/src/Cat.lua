@@ -35,7 +35,7 @@ FurColors = {
      stripes = 1,
      whiskers = 7,
      nose = 9,
-     outline = 5
+     outline = 1
    },
    BROWN = {
      name = "brown",
@@ -79,9 +79,11 @@ CatType.new = function(spriteId)
         pal(1, traits[TraitKeys.FUR_COLOR].fur)
         pal(7, traits[TraitKeys.FUR_COLOR].whiskers)
         pal(9, traits[TraitKeys.FUR_COLOR].nose)
+        pal(0, traits[TraitKeys.FUR_COLOR].outline)
 
         pal(3, traits[TraitKeys.EYE_COLOR].inner)
         pal(11, traits[TraitKeys.EYE_COLOR].outer)
+        pal(4, 0) -- pupils are grey to distinguish from outline
 
         spr(self.spriteId, x - 64 / 2, y - 64, 8, 8)
         pal()
