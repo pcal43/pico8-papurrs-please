@@ -7,8 +7,15 @@ GameScreen.new = function()
     self.canPress = true
 
     self.catList = {}
+    local fur_list = {FurColors.WHITE, FurColors.ORANGE, FurColors.GRAY, FurColors.BLACK, FurColors.BROWN}
+    local eye_list = {EyeColors.GREEN, EyeColors.BLUE, EyeColors.GOLDEN}
     for i=1,5 do
-        local traits = { [TraitKeys.FUR_COLOR] = i * 2 , [TraitKeys.EYE_COLOR] = i + 9}
+        local fidx = ((i - 1) % #fur_list) + 1
+        local eidx = ((i - 1) % #eye_list) + 1
+        local traits = {
+            [TraitKeys.FUR_COLOR] = fur_list[fidx],
+            [TraitKeys.EYE_COLOR] = eye_list[eidx]
+        }
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
 
@@ -41,19 +48,19 @@ GameScreen.new = function()
         -- discrete taps: left decrements, right increments
         if btn(0) then
             if self.canPress then
-                self.targetPos = self.targetPos - 1
+                if self.targetPos > 1 then
+                    self.targetPos = self.targetPos - 1
+                end
                 self.canPress = false
             end
         elseif btn(1) then
             if self.canPress then
-                                            printh("tap "..tostr(self.canPress))
-
-                self.targetPos = self.targetPos + 1
+                if self.targetPos < #self.catList then
+                    self.targetPos = self.targetPos + 1
+                end
                 self.canPress = false
             end
         else 
-                                            printh("clear")
-
             self.canPress = true
         end
 
