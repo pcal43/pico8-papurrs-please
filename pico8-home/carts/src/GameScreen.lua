@@ -60,7 +60,7 @@ GameScreen.new = function()
 
         -- lerp scrollPos toward targetPos by 2% per frame
         if self.scrollPos ~= self.targetPos then
-            self.scrollPos = self.scrollPos + (self.targetPos - self.scrollPos) * 0.02
+            self.scrollPos = self.scrollPos + (self.targetPos - self.scrollPos) * 0.2
             if abs(self.targetPos - self.scrollPos) < 0.001 then
                 self.scrollPos = self.targetPos
             end
@@ -86,14 +86,18 @@ end
     local CAT_WIDTH = 64
 
     function self.draw_cat_list(scrollPos)
-        for i = -1, 1 do
-            local catIndex = flr(scrollPos + i)
+        local base_index = flr(scrollPos)
+        local frac = scrollPos - base_index
+        local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
+
+        for j = -1, 1 do
+            local catIndex = base_index + j
             if catIndex > 0 and catIndex <= #self.catList then
-                local xPos = SCREEN_WIDTH/2 + (i * CAT_WIDTH + SPACE_BETWEEN_CATS)
+                -- position each slot, then shift by fractional progress toward next slot
+                local xPos = SCREEN_WIDTH/2 + (j * spacing) - (frac * spacing)
                 self.catList[catIndex].draw(xPos, CAT_Y_POS)
             end
         end
-
     end
 
 
