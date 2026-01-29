@@ -6,18 +6,18 @@ Controller.new = function()
     local self = {}
     self.frameAlpha = -1
 
-    local titleScreen = nil
-    local activeScreen = titleScreen    
+    local gameScreen = nil
+    local activeScreen = gameScreen    
 
     local function showTitle()
-        titleScreen.show()
-        activeScreen = titleScreen
+        gameScreen.show()
+        activeScreen = gameScreen
     end
 
 
     function self.init()
         cartdata("lost-cats") -- set the key for persistent storage
-        titleScreen = TitleScreen.new(playfield, self.onStart)
+        gameScreen = GameScreen.new()
         showTitle()
     end
 
