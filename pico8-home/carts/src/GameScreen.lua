@@ -5,11 +5,14 @@ GameScreen.new = function()
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = true
+    self.secondsRemaining = 60.0
+    self.catsRemaining = 10
+    self._last_time = time()
 
     self.catList = {}
     local fur_list = {FurColors.WHITE, FurColors.ORANGE, FurColors.GRAY, FurColors.BLACK, FurColors.BROWN}
     local eye_list = {EyeColors.GREEN, EyeColors.BLUE, EyeColors.GOLDEN}
-    for i=1,5 do
+    for i=1,self.catsRemaining do
         local fidx = ((i - 1) % #fur_list) + 1
         local eidx = ((i - 1) % #eye_list) + 1
         local traits = {
@@ -18,6 +21,7 @@ GameScreen.new = function()
         }
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
+
 
     function self.show()
     end
@@ -39,11 +43,54 @@ GameScreen.new = function()
         self.print_center_top("blue fur", 2, 4)
         self.print_center_top("green eyes", 3, 4)
 
+        -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
+        palt(0, false) -- black is black, beige is transparent
+        local CLOCK_MARGIN = 2
+
+        -- left icon and catsRemaining beneath
+        local left_x = CLOCK_MARGIN
+        local left_y = CLOCK_MARGIN
+        spr(8, left_x, left_y, 2, 2)
+        local cats = flr(self.catsRemaining)
+        local cats_s = tostr(cats)
+        local cats_w = #cats_s * 4
+        local cats_tx = (left_x + 8) - (cats_w / 2)
+        local cats_ty = left_y + 16 + 2
+        print(cats_s, cats_tx, cats_ty, 1)
+
+        -- clock (upper-right) and secondsRemaining beneath
+        local clock_x = 128 - 16 - CLOCK_MARGIN
+        local clock_y = CLOCK_MARGIN
+        spr(10, clock_x, clock_y, 2, 2)
+        local secs = flr(self.secondsRemaining)
+        local s = tostr(secs)
+        local txt_w = #s * 4
+        local tx = (clock_x + 8) - (txt_w / 2)
+        local ty = clock_y + 16 + 2
+        print(s, tx, ty, 1)
+        palt()
+
+
+
+
+        
         self.draw_cat_list(self.scrollPos)
 
     end
 
     function self.update()
+
+        -- update countdown
+        local now = time()
+        local dt = now - (self._last_time or now)
+        self._last_time = now
+        if dt > 0 then
+            if self.secondsRemaining > dt then
+                self.secondsRemaining = self.secondsRemaining - dt
+            else
+                self.secondsRemaining = 0
+            end
+        end
 
         -- discrete taps: left decrements, right increments
         if btn(0) then
@@ -60,7 +107,7 @@ GameScreen.new = function()
                 end
                 self.canPress = false
             end
-        else 
+        else
             self.canPress = true
         end
 

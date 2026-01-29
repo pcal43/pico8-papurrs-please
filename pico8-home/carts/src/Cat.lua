@@ -35,7 +35,7 @@ FurColors = {
      stripes = 1,
      whiskers = 7,
      nose = 9,
-     outline = 1
+     outline = 5
    },
    BROWN = {
      name = "brown",
@@ -87,8 +87,8 @@ CatType.new = function(spriteId)
 
         spr(self.spriteId, x - 64 / 2, y - 64, 8, 8)
         pal()
-        palt(15, false) -- reset
-        palt(0, true)
+        palt()
+
     end
 
     return self

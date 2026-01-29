@@ -17,6 +17,7 @@ Controller.new = function()
 
     function self.init()
         cartdata("lost-cats") -- set the key for persistent storage
+
         gameScreen = GameScreen.new()
         showTitle()
     end
@@ -27,6 +28,8 @@ Controller.new = function()
     end
 
     function self.draw()
+
+
         if (activeScreen != nil) activeScreen.draw()
     end
 
