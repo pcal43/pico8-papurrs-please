@@ -57,12 +57,16 @@ GameScreen.new = function()
             self.canPress = true
         end
 
-
-        -- lerp scrollPos toward targetPos by 2% per frame
-        if self.scrollPos ~= self.targetPos then
-            self.scrollPos = self.scrollPos + (self.targetPos - self.scrollPos) * 0.2
-            if abs(self.targetPos - self.scrollPos) < 0.001 then
+        -- adjust scrollPos to 'catch up' with targetPos
+        local diff = self.targetPos - self.scrollPos
+        local dist = abs(diff)
+        if dist > 0 then
+            local step = dist * 0.2
+            if step < 0.1 then step = 0.1 end
+            if step >= dist then
                 self.scrollPos = self.targetPos
+            else
+                self.scrollPos = self.scrollPos + sgn(diff) * step
             end
         end
 
