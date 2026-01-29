@@ -8,7 +8,8 @@ GameScreen.new = function()
 
     self.catList = {}
     for i=1,5 do
-        self.catList[i] = Cat.new(TUXEDO_CAT)
+        local traits = { [TraitKeys.FUR_COLOR] = i * 2 , [TraitKeys.EYE_COLOR] = i + 9}
+        self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
 
     function self.show()
