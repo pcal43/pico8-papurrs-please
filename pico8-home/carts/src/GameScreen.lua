@@ -58,7 +58,13 @@ GameScreen.new = function()
         end
 
 
-        self.scrollPos = self.targetPos --fixme
+        -- lerp scrollPos toward targetPos by 2% per frame
+        if self.scrollPos ~= self.targetPos then
+            self.scrollPos = self.scrollPos + (self.targetPos - self.scrollPos) * 0.02
+            if abs(self.targetPos - self.scrollPos) < 0.001 then
+                self.scrollPos = self.targetPos
+            end
+        end
 
     end
 
