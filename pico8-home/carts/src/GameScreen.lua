@@ -6,13 +6,17 @@ GameScreen.new = function()
     self.targetPos = 1
     self.canPress = true
     self.secondsRemaining = 60.0
-    self.catsRemaining = 10
     self._last_time = time()
 
     self.catList = {}
+    self.catListSize = 10
+
+    self.posters = generate_posters(10)
+
+
     local fur_list = {FurColors.WHITE, FurColors.ORANGE, FurColors.GRAY, FurColors.BLACK, FurColors.BROWN}
     local eye_list = {EyeColors.GREEN, EyeColors.BLUE, EyeColors.GOLDEN}
-    for i=1,self.catsRemaining do
+    for i=1,self.catListSize do
         local fidx = ((i - 1) % #fur_list) + 1
         local eidx = ((i - 1) % #eye_list) + 1
         local traits = {
@@ -29,7 +33,7 @@ GameScreen.new = function()
     function self.draw()
         cls(15) -- offwhite background
 
-        -- draw paper at the top
+        -- draw poster at the top
         local rw, rh = 84, 44
         local rx = (128 - rw) / 2
         local ry = 0
@@ -39,7 +43,7 @@ GameScreen.new = function()
         rectfill(rx, ry + rh - 1, rx + rw - 1, ry + rh - 1, 5) -- bottom
 
         self.print_center_top("lost cat:", 0, 2)
-        self.print_center_top("fluffy", 1, 2)
+        self.print_center_top(self.posters[1].name, 1, 2)
         self.print_center_top("blue fur", 2, 4)
         self.print_center_top("green eyes", 3, 4)
 
@@ -51,7 +55,7 @@ GameScreen.new = function()
         local left_x = CLOCK_MARGIN
         local left_y = CLOCK_MARGIN
         spr(8, left_x, left_y, 2, 2)
-        local cats = flr(self.catsRemaining)
+        local cats = flr(#self.posters)
         local cats_s = tostr(cats)
         local cats_w = #cats_s * 4
         local cats_tx = (left_x + 8) - (cats_w / 2)

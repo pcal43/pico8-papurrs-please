@@ -2,6 +2,8 @@ pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
 
+#include src/Traits.lua
+#include src/Poster.lua
 #include src/Cat.lua
 #include src/GameScreen.lua
 #include src/Controller.lua
