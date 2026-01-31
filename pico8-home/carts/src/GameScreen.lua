@@ -218,6 +218,8 @@ GameScreen.new = function()
                     cat.poster.targetY = POSTER_TOP_DISPLAY_POS
                 elseif cat.poster.y <= cat.poster.targetY then
                     -- otherwise, we wait for it to move to the target.  when it gets there...
+                    local pronoun = cat.poster.isFemale and "her" or "him"
+                    self.message = "is this "..pronoun.."?"
                     self.targetPos += 1
                 end
             else

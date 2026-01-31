@@ -35,8 +35,6 @@ Cat.new = function(catTemplate, traits)
     self.traits = requireNonNil(traits)
     self.poster = nil
     self.x = SCREEN_WIDTH / 2
-    self.posterY = POSTER_TOP_DISPLAY_POS
-    self.posterTargetY = POSTER_BOT_DISPLAY_POS
 
     function self.update()
         if self.poster then

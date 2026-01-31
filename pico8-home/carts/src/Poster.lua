@@ -1,7 +1,8 @@
 Poster = {}
-Poster.new = function(name, traits)
+Poster.new = function(name, isFemale, traits)
     local self = {}
     self.name = requireNonNil(name)
+    self.isFemale = requireNonNil(isFemale)
     self.traits = requireNonNil(traits)
     self.x = SCREEN_WIDTH / 2
     self.y = POSTER_NEW_DISPLAY_POS
@@ -48,6 +49,7 @@ Poster.new = function(name, traits)
         end
     end
 
+
     return self
 end
 
@@ -76,8 +78,8 @@ function generate_posters(count, minTraits, maxTraits)
             add(traits, selectedValue)  -- use add() to append to array
         end
         
-        local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")        
-        add(posters, Poster.new(name, traits))
+        local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")
+        add(posters, Poster.new(name, name_indeces[i] < CAT_NAME_FIRST_MALE, traits))
     end
     
     return posters
