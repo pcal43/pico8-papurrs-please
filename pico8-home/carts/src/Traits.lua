@@ -1,3 +1,9 @@
+
+TraitKeys = {
+  FUR_COLOR,
+  EYE_COLOR
+}
+
 TraitValues = {}
 
 TraitValues[FUR_PATTERN] = {

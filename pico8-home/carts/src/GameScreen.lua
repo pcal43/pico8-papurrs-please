@@ -233,7 +233,24 @@ end
 
 
 
--- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
+-- Returns lists of Cat and Poster objects, each of length count.  Each poster
+-- will have a random number of traits (between minTraits and maxTraits).  
+-- The traits for the Cats and Posters will be chosen such that there will be a bijection
+-- between Cats and Posters: for each Cat returned there will be exactly one Poster that
+-- is a match for it (as defined by Poster.isMatch), and vice versa.
+--
+-- Other than that, the Poster traits will be chosen randomly.  The TraitKeys will be chosen 
+-- randomly from those in the list TraitKeys (in Traits.lua).  The values for
+-- each Poster trait will be randomly chosen.  A Poster will have at most one mapping for
+-- any given TraitKey.
+--
+-- Cats will have all of the TraitKeys defined in their trait tables, with the TraitValues
+-- for each again randomly chosen.  Again, provided that the 1:1 matching relationship
+-- between Cats and Posters is maintained
+--
+-- If the 1:1 matching constraint cannot be maintained, and error should be printed 
+-- and the 'count' reduced to the point where the constraints can be satisfied.
+
 function generatePostersAndCats(count, minTraits, maxTraits)
   printh("IN")
     minTraits = requireNonNil(minTraits)
