@@ -19,7 +19,7 @@ GameScreen.new = function()
     self.secondsRemaining = 60.0
     self._last_time = time()
 
-    self.posters, self.catList = generatePostersAndCats(10, 1, 1)
+    self.posters, self.catList = generatePostersAndCats(10, 1, 1, {FUR_COLOR, EYE_COLOR})
     self.catListSize = 10
 
     function self.draw()
@@ -251,9 +251,10 @@ end
 -- If the 1:1 matching constraint cannot be maintained, and error should be printed 
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
-function generatePostersAndCats(count, minTraits, maxTraits)
+function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
     minTraits = requireNonNil(minTraits)
     maxTraits = requireNonNil(maxTraits)
+    posterTraitKeys = requireNonNil(posterTraitKeys)
     
     local posters = {}
     local cats = {}
@@ -296,7 +297,19 @@ function generatePostersAndCats(count, minTraits, maxTraits)
         if not usedCatCombos[catComboKey] then
             -- Now try to create a unique poster for this cat
             local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-            local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
+            -- Pick numTraits random keys from posterTraitKeys
+            local availableKeys = {}
+            for i = 1, #posterTraitKeys do
+                add(availableKeys, posterTraitKeys[i])
+            end
+            local traitKeys = {}
+            for i = 1, numTraits do
+                if #availableKeys > 0 then
+                    local idx = flr(rnd(#availableKeys)) + 1
+                    add(traitKeys, availableKeys[idx])
+                    del(availableKeys, availableKeys[idx])
+                end
+            end
             
             -- build poster traits by copying from cat
             local posterTraits = {}
