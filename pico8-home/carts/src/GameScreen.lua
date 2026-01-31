@@ -252,44 +252,121 @@ end
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
 function generatePostersAndCats(count, minTraits, maxTraits)
-  printh("IN")
     minTraits = requireNonNil(minTraits)
     maxTraits = requireNonNil(maxTraits)
     
     local posters = {}
+    local cats = {}
+    
+    -- Calculate maximum possible unique combinations
+    local maxCombos = 1
+    for traitKey = 1, TRAIT_TYPE_COUNT do
+        maxCombos = maxCombos * #TraitValues[traitKey]
+    end
+    
+    -- Reduce count if we don't have enough unique combinations
+    if count > maxCombos then
+        printh("reducing count from "..count.." to "..maxCombos.." (max unique combinations)")
+        count = maxCombos
+    end
+    
     -- Get n unique integers to use as indices for cat names
     local name_indeces = pickUniqueIntegers(count, 1, CAT_NAME_COUNT)
-    for i = 1, count do
-        -- determine how many traits this poster should have
-        local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-        -- select random trait keys
-        local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
-        -- build traits map
-        local traits = {}
-        for j = 1, #traitKeys do
-            local traitKey = traitKeys[j]
+    
+    -- Generate unique cat trait combinations
+    local usedCatCombos = {}  -- track cat combinations as strings
+    local usedPosterCombos = {}  -- track poster combinations as strings
+    local attempts = 0
+    local maxAttempts = count * 100
+    
+    while #cats < count and attempts < maxAttempts do
+        attempts = attempts + 1
+        
+        -- Generate random cat trait combination
+        local catTraits = {}
+        local catComboKey = ""
+        for traitKey = 1, TRAIT_TYPE_COUNT do
             local possibleValues = TraitValues[traitKey]
-            -- pick a random value using #
-            local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
-
-            traits[traitKey] = selectedValue  -- use trait key to create map
+            local idx = flr(rnd(#possibleValues)) + 1
+            catTraits[traitKey] = possibleValues[idx]
+            catComboKey = catComboKey..traitKey..":"..idx..","
         end
         
-        local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")
-        add(posters, Poster.new(name, name_indeces[i] < CAT_NAME_FIRST_MALE, traits))
+        -- Check if this cat combination is unique
+        if not usedCatCombos[catComboKey] then
+            -- Now try to create a unique poster for this cat
+            local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
+            local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
+            
+            -- build poster traits by copying from cat
+            local posterTraits = {}
+            local posterComboKey = ""
+            for j = 1, #traitKeys do
+                local traitKey = traitKeys[j]
+                posterTraits[traitKey] = catTraits[traitKey]
+                -- build unique key for this poster
+                local val = catTraits[traitKey]
+                posterComboKey = posterComboKey..traitKey..":"..val.name..","
+            end
+            
+            -- Check if this poster combination is unique
+            if not usedPosterCombos[posterComboKey] then
+                -- Now check bidirectional uniqueness:
+                -- 1. This poster should not match any existing cat
+                -- 2. This cat should not match any existing poster
+                local isUnique = true
+                
+                -- Check if this poster would match any existing cat
+                for i = 1, #cats do
+                    local otherCat = cats[i]
+                    local matches = true
+                    for traitKey, traitValue in pairs(posterTraits) do
+                        if otherCat.traits[traitKey] != traitValue then
+                            matches = false
+                            break
+                        end
+                    end
+                    if matches then
+                        isUnique = false
+                        break
+                    end
+                end
+                
+                -- Check if this cat would match any existing poster
+                if isUnique then
+                    for i = 1, #posters do
+                        local otherPoster = posters[i]
+                        local matches = true
+                        for traitKey, traitValue in pairs(otherPoster.traits) do
+                            if catTraits[traitKey] != traitValue then
+                                matches = false
+                                break
+                            end
+                        end
+                        if matches then
+                            isUnique = false
+                            break
+                        end
+                    end
+                end
+                
+                if isUnique then
+                    usedCatCombos[catComboKey] = true
+                    usedPosterCombos[posterComboKey] = true
+                    add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                    
+                    local catIndex = #cats
+                    local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
+                    add(posters, Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits))
+                end
+            end
+        end
     end
-
-    local cats = {}
-
-    for i=1,count do
-        local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
-        local eidx = ((i - 1) % #TraitValues[EYE_COLOR]) + 1
-        local traits = {
-            [FUR_COLOR] = TraitValues[FUR_COLOR][fidx],
-            [EYE_COLOR] = TraitValues[EYE_COLOR][eidx]
-        }
-        cats[i] = Cat.new(TUXEDO_CAT, traits)
+    
+    -- Report if we couldn't generate enough unique pairs
+    if #cats < count then
+        printh("could only generate "..#cats.." unique cat/poster pairs (requested "..count..")")
     end
-
+    
     return posters, cats
 end
