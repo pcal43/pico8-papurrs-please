@@ -4,6 +4,7 @@ Poster.new = function(name, isFemale, traits)
     self.name = requireNonNil(name)
     self.isFemale = requireNonNil(isFemale)
     self.traits = requireNonNil(traits)
+    self.traitCount = mapSize(traits)
     self.x = SCREEN_WIDTH / 2
     self.y = POSTER_NEW_DISPLAY_POS
     self.targetY = POSTER_TOP_DISPLAY_POS
@@ -23,8 +24,7 @@ Poster.new = function(name, isFemale, traits)
     end
 
     function self.draw()
-        local traitCount = #self.traits
-        local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
+        local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (self.traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
 
         local rx = self.x - POSTER_WIDTH / 2
         rectfill(rx, self.y, rx + POSTER_WIDTH - 1, self.y + posterHeight, WHITE) -- white
@@ -53,11 +53,28 @@ Poster.new = function(name, isFemale, traits)
     -- traits in the given traits array.  Specifically, this is true if and only if there is
     -- no TraitKey 'x' such that self.traits[x] does not equal traits[x]
     function self.isMatch(traits)
+        requireMap(traits)
+        requireMap(self.traits)
+        printh("=== isMatch checking for "..self.name.." ===")
+        printh("poster has "..#self.traits.." traits")
         for trait_key, trait_value in pairs(self.traits) do
-            if traits[trait_key] != trait_value then
+            printh("checking trait_key="..trait_key)
+            printh("  poster trait_value.name="..trait_value.name)
+            local cat_trait = traits[trait_key]
+            if cat_trait then
+                printh("  cat trait_value.name="..cat_trait.name)
+                if cat_trait != trait_value then
+                    printh("  MISMATCH!")
+                    return false
+                else
+                    printh("  match ok")
+                end
+            else
+                printh("  cat has no trait for key "..trait_key)
                 return false
             end
         end
+        printh("all traits matched!")
         return true
     end
 
@@ -66,7 +83,7 @@ Poster.new = function(name, isFemale, traits)
 end
 
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
-function generate_posters(count, minTraits, maxTraits)
+function generatePosters(count, minTraits, maxTraits)
   printh("IN")
     minTraits = requireNonNil(minTraits)
     maxTraits = requireNonNil(maxTraits)
@@ -79,16 +96,15 @@ function generate_posters(count, minTraits, maxTraits)
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
         -- select random trait keys
         local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
-        -- build traits array
+        -- build traits map
         local traits = {}
         for j = 1, #traitKeys do
             local traitKey = traitKeys[j]
             local possibleValues = TraitValues[traitKey]
-            
             -- pick a random value using #
             local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
-            
-            add(traits, selectedValue)  -- use add() to append to array
+
+            traits[traitKey] = selectedValue  -- use trait key to create map
         end
         
         local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")

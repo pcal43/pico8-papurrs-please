@@ -62,26 +62,66 @@ function print_center_top(text, line, y_margin, color, base_y)
 end
 
 function pickUniqueIntegers(count, minValue, maxValue)
-  local pool = {}
-  local results = {}
-  
-  -- 1. fill the pool with all possible numbers
-  for i=minValue,maxValue do 
-    add(pool, i) 
-  end
-  
-  -- 2. pick 'count' numbers from the pool
-  for i=1,count do
-    -- pick a random index based on current pool size
-    local idx = flr(rnd(#pool)) + 1
+    local pool = {}
+    local results = {}
     
-    -- add the value at that index to our results
-    local val = pool[idx]
-    add(results, val)
+    -- 1. fill the pool with all possible numbers
+    for i=minValue,maxValue do 
+        add(pool, i) 
+    end
     
-    -- remove it from the pool so it can't be picked again
-    del(pool, val)
-  end
-  
-  return results
+    -- 2. pick 'count' numbers from the pool
+    for i=1,count do
+        -- pick a random index based on current pool size
+        local idx = flr(rnd(#pool)) + 1
+        
+        -- add the value at that index to our results
+        local val = pool[idx]
+        add(results, val)
+        
+        -- remove it from the pool so it can't be picked again
+        del(pool, val)
+    end
+    
+    return results
+end
+
+-- Returns true if the table is empty or has only consecutive integer keys starting at 1
+function isArray(t)
+    if type(t) ~= "table" then return false end
+    
+    local count = 0
+    for _ in pairs(t) do count = count + 1 end
+    if count == 0 then return true end
+    
+    return #t == count
+end
+
+-- Returns true if the table is a map (not an array)
+-- Arrays have consecutive integer keys 1,2,3... Maps have sparse/non-sequential keys
+function isMap(t)
+    if type(t) ~= "table" then return false end
+    return not isArray(t)
+end
+
+-- Assertions
+function requireArray(val, name)
+    requireNonNil(val)
+    name = name or "value"
+    assert(isArray(val), name.." must be a sequential array; found "..type(val))
+end
+
+function requireMap(val, name)
+    requireNonNil(val)
+    name = name or "value"
+    assert(isMap(val), name.." must be a key-value map; found "..type(val))
+end
+
+function mapSize(val)
+    requireNonNil(val, "mapSize input")
+    local count = 0
+    for _ in pairs(val) do
+        count = count + 1
+    end
+    return count
 end

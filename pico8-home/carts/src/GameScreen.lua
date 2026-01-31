@@ -23,7 +23,7 @@ GameScreen.new = function()
     self.catList = {}
     self.catListSize = 10
 
-    self.posters = generate_posters(10, 1, 2)
+    self.posters = generatePosters(10, 1, 1)
 
     for i=1,self.catListSize do
         local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1

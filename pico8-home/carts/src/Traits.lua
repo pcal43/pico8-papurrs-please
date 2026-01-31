@@ -1,6 +1,3 @@
-
-
-
 TraitValues = {}
 
 TraitValues[FUR_PATTERN] = {
@@ -22,90 +19,90 @@ TraitValues[COLLAR] = {
     },
     {
       name = "pink collar",
-      color = 14
+      color = PINK
     },
     {
       name = "green collar",
-      color = 3
+      color = DARK_GREEN
     }
 }
 
 TraitValues[FUR_COLOR] = {
    {
      name = "white fur",
-     fur = 7,
-     stripes = 6,
-     whiskers = 5,
-     nose = 14,
-     outline = 0
+     fur = WHITE,
+     stripes = LIGHT_GRAY,
+     whiskers = DARK_GRAY,
+     nose = PINK,
+     outline = BLACK
    },
    {
      name = "orange fur",
-     fur = 9,
-     stripes = 4,
-     whiskers = 7,
-     nose = 14,
-     outline = 0
+     fur = ORANGE,
+     stripes = BROWN,
+     whiskers = WHITE,
+     nose = PINK,
+     outline = BLACK
    },
    {
      name = "gray fur",
-     fur = 5,
-     stripes = 6,
-     whiskers = 7,
-     nose = 9,
-     outline = 0
+     fur = DARK_GRAY,
+     stripes = LIGHT_GRAY,
+     whiskers = WHITE,
+     nose = ORANGE,
+     outline = BLACK
    },
    {
      name = "black fur",
-     fur = 0,
-     stripes = 1,
-     whiskers = 7,
-     nose = 9,
-     outline = 5
+     fur = BLACK,
+     stripes = DARK_BLUE,
+     whiskers = WHITE,
+     nose = ORANGE,
+     outline = DARK_GRAY
    },
    {
      name = "brown fur",
-     fur = 4,
-     stripes = 9,
-     whiskers = 7,
-     nose = 9,
-     outline = 0
+     fur = BROWN,
+     stripes = ORANGE,
+     whiskers = WHITE,
+     nose = ORANGE,
+     outline = BLACK
    }
 }
 
 TraitValues[EYE_COLOR] = {
    {
      name = "green eyes",
-     inner = 3,
-     outer = 11
+     inner = DARK_GREEN,
+     outer = GREEN
    },
    {
-     name = "blue eys",
-     inner = 13,
-     outer = 12
+     name = "blue eyes",
+     inner = INDIGO,
+     outer = BLUE
    },
    {
      name = "golden eyes",
-     inner = 9,
-     outer = 10
+     inner = ORANGE,
+     outer = YELLOW
    }
 }
 
 TraitValues[EAR_COLOR] = {
    {
      name = "pink ears",
-     inner = 3,
-     outer = 11
+     inner = DARK_GREEN,
+     outer = GREEN
    },
    {
      name = "white ears",
-     inner = 13,
-     outer = 12
+     inner = INDIGO,
+     outer = BLUE
    },
    {
      name = "black ears",
-     inner = 9,
-     outer = 10
+     inner = ORANGE,
+     outer = YELLOW
    }
 }
 
