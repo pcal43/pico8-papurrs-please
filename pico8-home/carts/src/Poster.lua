@@ -3,10 +3,24 @@ Poster.new = function(name, traits)
     local self = {}
     self.name = requireNonNil(name)
     self.traits = requireNonNil(traits)
+    self.y = POSTER_TOP_DISPLAY_POS
+    self.targetY = POSTER_TOP_DISPLAY_POS
 
+    function self.update()
+        -- adjust y to 'catch up' with targetY
+        local diff = self.targetY - self.y
+        local dist = abs(diff)
+        if dist > 0 then
+            if dist <= POSTER_MOVE_SPEED then
+                self.y = self.targetY
+            else
+                self.y = self.y + sgn(diff) * POSTER_MOVE_SPEED
+            end
+        end
+    end
 
     function self.draw(x, y)
-        x = x or 64 -- default to center if not provided
+        y = y or self.y -- use instance y if not provided
         local poster_x = x - POSTER_WIDTH / 2
 
         local traitCount = #self.traits

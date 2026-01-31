@@ -7,8 +7,6 @@ GameScreen.new = function()
     self.canPress = true
     self.secondsRemaining = 60.0
     self._last_time = time()
-    self.posterY = POSTER_NEW_DISPLAY_POS
-    self.targetPosterY = POSTER_TOP_DISPLAY_POS
 
     self.catList = {}
     self.catListSize = 10
@@ -33,7 +31,7 @@ GameScreen.new = function()
         cls(15) -- offwhite background
 
         -- draw poster at the top
-        self.posters[1].draw(SCREEN_WIDTH/2, self.posterY)
+        self.posters[1].draw(SCREEN_WIDTH/2)
 
         local header_h = 9
         local header_w = 84
@@ -123,8 +121,8 @@ GameScreen.new = function()
                     
                     -- Animate the next poster moving down
                     if #self.posters > 0 then
-                        self.posterY = POSTER_NEW_DISPLAY_POS
-                        self.targetPosterY = POSTER_TOP_DISPLAY_POS
+                        self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                        self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
                     end
                 end
                 
@@ -147,15 +145,9 @@ GameScreen.new = function()
             end
         end
 
-        -- adjust posterY to 'catch up' with targetPosterY
-        local posterDiff = self.targetPosterY - self.posterY
-        local posterDist = abs(posterDiff)
-        if posterDist > 0 then
-            if posterDist <= POSTER_MOVE_SPEED then
-                self.posterY = self.targetPosterY
-            else
-                self.posterY = self.posterY + sgn(posterDiff) * POSTER_MOVE_SPEED
-            end
+        -- update poster animation
+        if #self.posters > 0 then
+            self.posters[1].update()
         end
 
     end
