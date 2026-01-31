@@ -61,7 +61,7 @@ function print_center_top(text, line, y_margin, color, base_y)
     print(wide_text, x, y, color or 1, true)
 end
 
-function get_unique_integers(count, minValue, maxValue)
+function pickUniqueIntegers(count, minValue, maxValue)
   local pool = {}
   local results = {}
   

@@ -73,12 +73,12 @@ function generate_posters(count, minTraits, maxTraits)
     
     local posters = {}
     -- Get n unique integers to use as indices for cat names
-    local name_indeces = get_unique_integers(count, 1, CAT_NAME_COUNT)
+    local name_indeces = pickUniqueIntegers(count, 1, CAT_NAME_COUNT)
     for i = 1, count do
         -- determine how many traits this poster should have
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
         -- select random trait keys
-        local traitKeys = get_unique_integers(numTraits, 1, TRAIT_TYPE_COUNT)
+        local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
         -- build traits array
         local traits = {}
         for j = 1, #traitKeys do
