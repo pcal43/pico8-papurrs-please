@@ -27,15 +27,15 @@ Poster.new = function(name, traits)
         local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
 
         local rx = poster_x
-        rectfill(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, 7) -- white
-        rect(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, 5) -- outline
+        rectfill(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, WHITE) -- white
+        rect(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, DARK_GRAY) -- outline
 
         -- print name
         local name_w = #self.name * 8
         local name_x = poster_x + (POSTER_WIDTH - name_w) / 2
         local name_y = y + 2
         local wide_name = "\^w"..self.name
-        print(wide_name, name_x, name_y, 1, true)
+        print(wide_name, name_x, name_y, DARK_BLUE, true)
         
         -- print traits
         local trait_line = 1
@@ -44,7 +44,7 @@ Poster.new = function(name, traits)
             local trait_x = poster_x + (POSTER_WIDTH - trait_w) / 2
             local trait_y = y + 9 + ((trait_line - 1) * TEXT_HEIGHT) + 4
             local wide_trait = "\^w"..trait_value.name
-            print(wide_trait, trait_x, trait_y, 1, true)
+            print(wide_trait, trait_x, trait_y, DARK_BLUE, true)
             trait_line = trait_line + 1
         end
     end

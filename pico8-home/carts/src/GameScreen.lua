@@ -2,14 +2,11 @@ local GameScreen = {}
 GameScreen.new = function()
     local self = {}
 
-
     self.scrollPos = 0
     self.targetPos = 1
-    self.canPress = true
+    self.canPress = false
     self.secondsRemaining = 60.0
     self._last_time = time()
-
-    self.state = STATE_PICKING
 
 
     self.catList = {}
@@ -28,11 +25,8 @@ GameScreen.new = function()
     end
 
 
-    function self.show()
-    end
-
     function self.draw()
-        cls(15) -- offwhite background
+        cls(PEACH) -- offwhite background
 
         -- draw poster at the top
         self.posters[1].draw(SCREEN_WIDTH/2)
@@ -41,12 +35,12 @@ GameScreen.new = function()
         local header_w = 84
         local header_x = (128 - header_w) / 2
         local header_y = 0
-        rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, 0)
-        self.print_center_top("lost cat!", 0, 5, 10, 2) -- yellow text
+        rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, BLACK)
+        print_center_top("lost cat!", 0, 5, YELLOW, 2) -- yellow text
 
 
         -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
-        palt(0, false) -- black is black, beige is transparent
+        palt(BLACK, false) -- black is black, beige is transparent
 
         -- left icon and catsRemaining beneath
         local left_x = CLOCK_MARGIN
@@ -57,7 +51,7 @@ GameScreen.new = function()
         local cats_w = #cats_s * 4
         local cats_tx = (left_x + 8) - (cats_w / 2)
         local cats_ty = left_y + 16 + 2
-        print(cats_s, cats_tx, cats_ty, 1)
+        print(cats_s, cats_tx, cats_ty, DARK_BLUE)
 
         -- clock (upper-right) and secondsRemaining beneath
         local clock_x = 128 - 16 - CLOCK_MARGIN
@@ -68,7 +62,7 @@ GameScreen.new = function()
         local txt_w = #s * 4
         local tx = (clock_x + 8) - (txt_w / 2)
         local ty = clock_y + 16 + 2
-        print(s, tx, ty, 1)
+        print(s, tx, ty, DARK_BLUE)
         palt()
 
 
@@ -153,15 +147,6 @@ GameScreen.new = function()
         end
 
     end
-
- function self.print_center_top(text, line, y_margin, color, base_y)
-    local w = #text * 8
-    local x = (128 - w) / 2
-    local y = (base_y or 0) + ((line - 1) * TEXT_HEIGHT) + (y_margin or 0)
-    local wide_text = "\^w"..text    
-    print(wide_text, x, y, color or 1, true)
-end
-
 
 
     function self.draw_cat_list(scrollPos)

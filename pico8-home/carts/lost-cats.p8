@@ -10,6 +10,7 @@ __lua__
 #include src/Cat.lua
 #include src/GameScreen.lua
 #include src/TitleScreen.lua
+#include src/DaySplashScreen.lua
 #include src/Controller.lua
 
 CONTROLLER = Controller.new()

@@ -5,16 +5,16 @@ CatTemplate.new = function(spriteId)
 
     -- draws the cat with it bottom middle point centered on the given coordinates
     function self.draw(x, y, traits)
-        palt(0, false) -- black is black, beige is transparent
-        palt(15, true)
-        pal(1, traits[FUR_COLOR].fur)
-        pal(7, traits[FUR_COLOR].whiskers)
-        pal(9, traits[FUR_COLOR].nose)
-        pal(0, traits[FUR_COLOR].outline)
+        palt(BLACK, false)
+        palt(PEACH, true)
+        pal(DARK_BLUE, traits[FUR_COLOR].fur)
+        pal(WHITE, traits[FUR_COLOR].whiskers)
+        pal(ORANGE, traits[FUR_COLOR].nose)
+        pal(BLACK, traits[FUR_COLOR].outline)
 
-        pal(3, traits[EYE_COLOR].inner)
-        pal(11, traits[EYE_COLOR].outer)
-        pal(4, 0) -- pupils are grey to distinguish from outline
+        pal(DARK_GREEN, traits[EYE_COLOR].inner)
+        pal(GREEN, traits[EYE_COLOR].outer)
+        pal(BROWN, BLACK) -- pupils are grey to distinguish from outline
 
         spr(self.spriteId, x - 64 / 2, y - 63, 8, 8)
         pal()

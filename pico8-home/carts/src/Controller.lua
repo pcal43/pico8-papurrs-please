@@ -33,8 +33,8 @@ Controller.new = function()
             -- Play through the week
             for day=1,7 do
                 -- Day splash
-                -- self.current_screen = DaySplashScreen.new(day)
-                -- for i=1,60 do yield() end
+                self.current_screen = DaySplashScreen.new(day)
+                while not self.current_screen.isDone() do yield() end
                 
                 -- Create the game screen
                 self.current_screen = GameScreen.new()
