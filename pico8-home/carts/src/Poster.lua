@@ -9,7 +9,7 @@ end
 
 
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
-function generate_posters(n)
+function generate_posters(n, minTraits, maxTraits)
   local posters = {}
   
   -- Get n unique integers to use as indices for cat names

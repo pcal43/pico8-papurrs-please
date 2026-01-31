@@ -1,15 +1,16 @@
 
 
 
-TraitKeys = {
+TraitKeys= {
     FUR_COLOR = 1,
     FUR_PATTERN = 2,
     EYE_COLOR = 3,
     COLLAR = 4,
 }
 
+TraitValues = {}
 
-FurPatterns = {
+TraitValues[TraitKeys.FUR_PATTERN] = {
    SOLID = {
      name = "solid color"
    },
@@ -21,7 +22,7 @@ FurPatterns = {
    },
 }
 
-CollarColors = {
+TraitValues[TraitKeys.COLLAR] = {
     NO_COLLAR = {
       name = "no collar",
       color = -1
@@ -36,7 +37,7 @@ CollarColors = {
     }
 }
 
-FurColors = {
+TraitValues[TraitKeys.FUR_COLOR] = {
    WHITE = {
      name = "white fur",
      fur = 7,
@@ -79,7 +80,7 @@ FurColors = {
    }
 }
 
-EyeColors = {
+TraitValues[TraitKeys.EYE_COLOR] = {
    GREEN = {
      name = "green eyes",
      inner = 3,
