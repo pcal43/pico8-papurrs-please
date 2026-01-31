@@ -34,14 +34,22 @@ Cat.new = function(catTemplate, traits)
     self.catTemplate = requireNonNil(catTemplate)
     self.traits = requireNonNil(traits)
     self.poster = nil
-    self.posterY = POSTER_BOT_DISPLAY_POS
+    self.x = SCREEN_WIDTH / 2
+    self.posterY = POSTER_TOP_DISPLAY_POS
     self.posterTargetY = POSTER_BOT_DISPLAY_POS
 
-    function self.draw(x, y)
-        requireNonNil(traits)
-        self.catTemplate.draw(x, y, traits)
+    function self.update()
         if self.poster then
-            self.poster.draw(x, self.posterY)
+            self.poster.x = self.x
+            self.poster.update()
+        end
+    end
+
+    function self.draw()
+        requireNonNil(traits)
+        self.catTemplate.draw(self.x, CAT_Y_POS, traits)
+        if self.poster then
+            self.poster.draw()
         end
     end
 

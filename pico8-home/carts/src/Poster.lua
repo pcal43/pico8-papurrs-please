@@ -3,7 +3,8 @@ Poster.new = function(name, traits)
     local self = {}
     self.name = requireNonNil(name)
     self.traits = requireNonNil(traits)
-    self.y = POSTER_TOP_DISPLAY_POS
+    self.x = SCREEN_WIDTH / 2
+    self.y = POSTER_NEW_DISPLAY_POS
     self.targetY = POSTER_TOP_DISPLAY_POS
 
     function self.update()
@@ -19,21 +20,18 @@ Poster.new = function(name, traits)
         end
     end
 
-    function self.draw(x, y)
-        y = y or self.y -- use instance y if not provided
-        local poster_x = x - POSTER_WIDTH / 2
-
+    function self.draw()
         local traitCount = #self.traits
         local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
 
-        local rx = poster_x
-        rectfill(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, WHITE) -- white
-        rect(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, DARK_GRAY) -- outline
+        local rx = self.x - POSTER_WIDTH / 2
+        rectfill(rx, self.y, rx + POSTER_WIDTH - 1, self.y + posterHeight, WHITE) -- white
+        rect(rx, self.y, rx + POSTER_WIDTH - 1, self.y + posterHeight, DARK_GRAY) -- outline
 
         -- print name
         local name_w = #self.name * 8
-        local name_x = poster_x + (POSTER_WIDTH - name_w) / 2
-        local name_y = y + 2
+        local name_x = rx + (POSTER_WIDTH - name_w) / 2
+        local name_y = self.y + 2
         local wide_name = "\^w"..self.name
         print(wide_name, name_x, name_y, DARK_BLUE, true)
         
@@ -41,8 +39,8 @@ Poster.new = function(name, traits)
         local trait_line = 1
         for trait_key, trait_value in pairs(self.traits) do
             local trait_w = #trait_value.name * 8
-            local trait_x = poster_x + (POSTER_WIDTH - trait_w) / 2
-            local trait_y = y + 9 + ((trait_line - 1) * TEXT_HEIGHT) + 4
+            local trait_x = rx + (POSTER_WIDTH - trait_w) / 2
+            local trait_y = self.y + 9 + ((trait_line - 1) * TEXT_HEIGHT) + 4
             local wide_trait = "\^w"..trait_value.name
             print(wide_trait, trait_x, trait_y, DARK_BLUE, true)
             trait_line = trait_line + 1

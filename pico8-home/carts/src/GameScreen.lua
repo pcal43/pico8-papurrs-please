@@ -40,7 +40,7 @@ GameScreen.new = function()
 
         -- draw poster at the top
         if #self.posters > 0 then
-            self.posters[1].draw(SCREEN_WIDTH/2)
+            self.posters[1].draw()
         end
 
         local header_h = 9
@@ -78,8 +78,14 @@ GameScreen.new = function()
         palt()
 
 
-        self.draw_cat_list(self.scrollPos)
-
+        -- draw the visible cats
+        local base_index = flr(self.scrollPos)
+        for j = -1, 1 do
+            local catIndex = base_index + j
+            if catIndex > 0 and catIndex <= #self.catList then
+                self.catList[catIndex].draw()
+            end
+        end
     end
 
     function self.update()
@@ -102,9 +108,44 @@ GameScreen.new = function()
                 self.state = CHECKING
                 self.messageTimer = 0
                 self.message = "let's check!"
+                self.targetPos = 1
             end
         elseif self.state == CHECKING then
             self.update_checking()
+        end
+
+        -- update animations - we want to do these in all modes
+
+            -- adjust scrollPos to 'catch up' with targetPos
+        local diff = self.targetPos - self.scrollPos
+        local dist = abs(diff)
+        if dist > 0 then
+            local step = dist * 0.2
+            if step < 0.1 then step = 0.1 end
+            if step >= dist then
+                self.scrollPos = self.targetPos
+            else
+                self.scrollPos = self.scrollPos + sgn(diff) * step
+            end
+        end
+
+        -- update poster animation
+        if #self.posters > 0 then
+            self.posters[1].update()
+        end
+
+        -- update the x position of the visible cats
+        local base_index = flr(self.scrollPos)
+        local frac = self.scrollPos - base_index
+        local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
+
+        for j = -1, 1 do
+            local catIndex = base_index + j
+            if catIndex > 0 and catIndex <= #self.catList then
+                -- position each slot, then shift by fractional progress toward next slot
+                self.catList[catIndex].x = SCREEN_WIDTH/2 + (j * spacing) - (frac * spacing)
+                self.catList[catIndex].update()
+            end
         end
     end
 
@@ -148,6 +189,7 @@ GameScreen.new = function()
                 if selectedCat and not selectedCat.poster and #self.posters > 0 then
                     -- Assign the poster to the cat
                     selectedCat.poster = self.posters[1]
+                    selectedCat.poster.targetY = POSTER_BOT_DISPLAY_POS
                     
                     -- Remove the poster from the list
                     del(self.posters, self.posters[1])
@@ -163,46 +205,22 @@ GameScreen.new = function()
         else
             self.canPress = true
         end
-
-        -- adjust scrollPos to 'catch up' with targetPos
-        local diff = self.targetPos - self.scrollPos
-        local dist = abs(diff)
-        if dist > 0 then
-            local step = dist * 0.2
-            if step < 0.1 then step = 0.1 end
-            if step >= dist then
-                self.scrollPos = self.targetPos
-            else
-                self.scrollPos = self.scrollPos + sgn(diff) * step
-            end
-        end
-
-        -- update poster animation
-        if #self.posters > 0 then
-            self.posters[1].update()
-        end
     end
 
 
     function self.update_checking()
-        -- TODO: implement checking logic
-    end
-
-
-    function self.draw_cat_list(scrollPos)
-        local base_index = flr(scrollPos)
-        local frac = scrollPos - base_index
-        local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
-
-        for j = -1, 1 do
-            local catIndex = base_index + j
-            if catIndex > 0 and catIndex <= #self.catList then
-                -- position each slot, then shift by fractional progress toward next slot
-                local xPos = SCREEN_WIDTH/2 + (j * spacing) - (frac * spacing)
-                self.catList[catIndex].draw(xPos, CAT_Y_POS)
+        if self.scrollPos == self.targetPos then -- dont do anything yet if we're still scrolling to the next cat
+            local cat = self.catList[self.scrollPos]
+            if cat.posterTargetY > POSTER_TOP_DISPLAY_POS then
+                -- the first time we see the it, its poster will be at the bottom.  start moving it up
+                cat.posterTargetY = POSTER_TOP_DISPLAY_POS
+            elseif  cat.posterY <= cat.posterTargetY then
+                -- otherwise, we wait for it to move to the target.  when it gets there...
+                self.targetPos += 1
             end
         end
     end
+
 
     function self.isDone()
         return self.state == CHECKING_DONE
