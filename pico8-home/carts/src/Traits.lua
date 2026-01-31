@@ -1,11 +1,44 @@
+
+
+
 TraitKeys = {
     FUR_COLOR = 1,
-    EYE_COLOR = 2
+    FUR_PATTERN = 2,
+    EYE_COLOR = 3,
+    COLLAR = 4,
+}
+
+
+FurPatterns = {
+   SOLID = {
+     name = "solid color"
+   },
+   STRIPED = {
+     name = "striped"
+   },
+   CALICO = {
+     name = "calico"
+   },
+}
+
+CollarColors = {
+    NO_COLLAR = {
+      name = "no collar",
+      color = -1
+    },
+    PINK_COLLAR = {
+      name = "pink collar",
+      color = 14
+    },
+    GREEN_COLLAR = {
+      name = "green collar",
+      color = 3
+    }
 }
 
 FurColors = {
    WHITE = {
-     name = "white",
+     name = "white fur",
      fur = 7,
      stripes = 6,
      whiskers = 5,
@@ -13,7 +46,7 @@ FurColors = {
      outline = 0
    },
    ORANGE = {
-     name = "orange",
+     name = "orange fur",
      fur = 9,
      stripes = 4,
      whiskers = 7,
@@ -21,7 +54,7 @@ FurColors = {
      outline = 0
    },
    GRAY = {
-     name = "gray",
+     name = "gray fur",
      fur = 5,
      stripes = 6,
      whiskers = 7,
@@ -29,7 +62,7 @@ FurColors = {
      outline = 0
    },
    BLACK = {
-     name = "black",
+     name = "black fur",
      fur = 0,
      stripes = 1,
      whiskers = 7,
@@ -37,7 +70,7 @@ FurColors = {
      outline = 5
    },
    BROWN = {
-     name = "brown",
+     name = "brown fur",
      fur = 4,
      stripes = 9,
      whiskers = 7,
@@ -48,17 +81,17 @@ FurColors = {
 
 EyeColors = {
    GREEN = {
-     name = "green",
+     name = "green eyes",
      inner = 3,
      outer = 11
    },
    BLUE = {
-     name = "blue",
+     name = "blue eys",
      inner = 13,
      outer = 12
    },
    GOLDEN = {
-     name = "golden",
+     name = "golden eyes",
      inner = 9,
      outer = 10
    }

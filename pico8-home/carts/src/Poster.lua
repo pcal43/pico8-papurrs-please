@@ -1,14 +1,11 @@
 Poster = {}
-Poster.new = function(name)
+Poster.new = function(name, traits)
     local self = {}
-    self.name = name
-
-    function self.draw(x, y)
-    end
+    self.name = requireNonNil(name)
+    self.traits = requireNonNil(traits)
 
     return self
 end
-
 
 
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
@@ -23,7 +20,12 @@ function generate_posters(n)
     printh(tostr(name_indeces[i]))
     local name = get_cat_name(name_indeces[i])
     printh(name)
-    add(posters, Poster.new(name))
+
+    traits = {}
+    traits[TraitKeys.EYE_COLOR] = EyeColors.GREEN
+    traits[TraitKeys.FUR_COLOR] = FurColors.BLACK
+
+    add(posters, Poster.new(name, traits))
   end
   
   return posters

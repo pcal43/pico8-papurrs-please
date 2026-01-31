@@ -1,8 +1,8 @@
 
 
 
-CatType = {}
-CatType.new = function(spriteId)
+CatTemplate = {}
+CatTemplate.new = function(spriteId)
     local self = {}
     self.spriteId = spriteId
 
@@ -10,6 +10,7 @@ CatType.new = function(spriteId)
     function self.draw(x, y, traits)
         palt(0, false) -- black is black, beige is transparent
         palt(15, true)
+        printh(tostr(traits))
         pal(1, traits[TraitKeys.FUR_COLOR].fur)
         pal(7, traits[TraitKeys.FUR_COLOR].whiskers)
         pal(9, traits[TraitKeys.FUR_COLOR].nose)
@@ -28,18 +29,20 @@ CatType.new = function(spriteId)
     return self
 end
 
-TUXEDO_CAT = CatType.new(0)
+TUXEDO_CAT = CatTemplate.new(0)
 
 
 Cat = {}
-Cat.new = function(catType, traits)
+Cat.new = function(catTemplate, traits)
     local self = {}
-    self.catType = catType
-    self.traits = traits
-    self.name = "???"
+    self.catTemplate = requireNonNil(catTemplate)
+    self.traits = requireNonNil(traits)
 
     function self.draw(x, y)
-        self.catType.draw(x, y, traits)
+      requireNonNil(traits)
+        printh(tostr(traits))
+        printh("-------")      
+        self.catTemplate.draw(x, y, traits)
     end
 
     return self

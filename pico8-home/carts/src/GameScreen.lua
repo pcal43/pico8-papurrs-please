@@ -53,8 +53,13 @@ GameScreen.new = function()
         rectfill(rx, self.posterY, rx + rw - 1, self.posterY + rh - 1, 7)
         rect(rx, self.posterY, rx + rw - 1,  self.posterY + rh - 1, 5)
         self.print_center_top(self.posters[1].name, 1, 2, 1, self.posterY + 9)
-        self.print_center_top("blue fur", 2, 4, 1, self.posterY + 9)
-        self.print_center_top("green eyes", 3, 4, 1, self.posterY + 9)
+        
+        -- print traits
+        local trait_line = 2
+        for trait_key, trait_value in pairs(self.posters[1].traits) do
+            self.print_center_top(trait_value.name, trait_line, 4, 1, self.posterY + 9)
+            trait_line = trait_line + 1
+        end
 
 
         rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, 0)
@@ -91,9 +96,6 @@ GameScreen.new = function()
         palt()
 
 
-
-
-        
         self.draw_cat_list(self.scrollPos)
 
     end
