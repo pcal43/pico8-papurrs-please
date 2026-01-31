@@ -45,6 +45,8 @@ TRAIT_TYPE_COUNT = 2 -- FIXME
 MATCH_ICON = 12
 BAD_MATCH_ICON = 14
 
+MAX_POSTER_CONFIG_ATTEMPTS = 50
+
 
 
 function requireNonNil(x, msg) 

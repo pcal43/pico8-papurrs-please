@@ -19,7 +19,7 @@ GameScreen.new = function()
     self.secondsRemaining = 60.0
     self._last_time = time()
 
-    self.posters, self.catList = generatePostersAndCats(10, 2, 2, {FUR_COLOR, EYE_COLOR})
+    self.posters, self.catList = generatePostersAndCats(10, 1, 2, {FUR_COLOR, EYE_COLOR})
     self.catListSize = 10
 
     function self.draw()
@@ -103,7 +103,7 @@ GameScreen.new = function()
 
         -- update animations - we want to do these in all modes
 
-            -- adjust scrollPos to 'catch up' with targetPos
+        -- adjust scrollPos to 'catch up' with targetPos
         local diff = self.targetPos - self.scrollPos
         local dist = abs(diff)
         if dist > 0 then
@@ -295,63 +295,54 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
         
         -- Check if this cat combination is unique
         if not usedCatCombos[catComboKey] then
-            -- Now try to create a unique poster for this cat
-            local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-            -- Pick numTraits random keys from posterTraitKeys
-            local availableKeys = {}
-            for i = 1, #posterTraitKeys do
-                add(availableKeys, posterTraitKeys[i])
-            end
-            local traitKeys = {}
-            for i = 1, numTraits do
-                if #availableKeys > 0 then
-                    local idx = flr(rnd(#availableKeys)) + 1
-                    add(traitKeys, availableKeys[idx])
-                    del(availableKeys, availableKeys[idx])
-                end
-            end
+            -- Try multiple poster configurations for this cat
+            local posterAttempts = 0
+            local maxPosterAttempts = MAX_POSTER_CONFIG_ATTEMPTS
+            local foundValidPoster = false
             
-            -- build poster traits by copying from cat
-            local posterTraits = {}
-            local posterComboKey = ""
-            for j = 1, #traitKeys do
-                local traitKey = traitKeys[j]
-                posterTraits[traitKey] = catTraits[traitKey]
-                -- build unique key for this poster
-                local val = catTraits[traitKey]
-                posterComboKey = posterComboKey..traitKey..":"..val.name..","
-            end
-            
-            -- Check if this poster combination is unique
-            if not usedPosterCombos[posterComboKey] then
-                -- Now check bidirectional uniqueness:
-                -- 1. This poster should not match any existing cat
-                -- 2. This cat should not match any existing poster
-                local isUnique = true
+            while not foundValidPoster and posterAttempts < maxPosterAttempts do
+                posterAttempts = posterAttempts + 1
                 
-                -- Check if this poster would match any existing cat
-                for i = 1, #cats do
-                    local otherCat = cats[i]
-                    local matches = true
-                    for traitKey, traitValue in pairs(posterTraits) do
-                        if otherCat.traits[traitKey] != traitValue then
-                            matches = false
-                            break
-                        end
-                    end
-                    if matches then
-                        isUnique = false
-                        break
+                -- Try different numbers of traits and selections
+                local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
+                -- Pick numTraits random keys from posterTraitKeys
+                local availableKeys = {}
+                for i = 1, #posterTraitKeys do
+                    add(availableKeys, posterTraitKeys[i])
+                end
+                local traitKeys = {}
+                for i = 1, numTraits do
+                    if #availableKeys > 0 then
+                        local idx = flr(rnd(#availableKeys)) + 1
+                        add(traitKeys, availableKeys[idx])
+                        del(availableKeys, availableKeys[idx])
                     end
                 end
                 
-                -- Check if this cat would match any existing poster
-                if isUnique then
-                    for i = 1, #posters do
-                        local otherPoster = posters[i]
+                -- build poster traits by copying from cat
+                local posterTraits = {}
+                local posterComboKey = ""
+                for j = 1, #traitKeys do
+                    local traitKey = traitKeys[j]
+                    posterTraits[traitKey] = catTraits[traitKey]
+                    -- build unique key for this poster
+                    local val = catTraits[traitKey]
+                    posterComboKey = posterComboKey..traitKey..":"..val.name..","
+                end
+                
+                -- Check if this poster combination is unique
+                if not usedPosterCombos[posterComboKey] then
+                    -- Now check bidirectional uniqueness:
+                    -- 1. This poster should not match any existing cat
+                    -- 2. This cat should not match any existing poster
+                    local isUnique = true
+                    
+                    -- Check if this poster would match any existing cat
+                    for i = 1, #cats do
+                        local otherCat = cats[i]
                         local matches = true
-                        for traitKey, traitValue in pairs(otherPoster.traits) do
-                            if catTraits[traitKey] != traitValue then
+                        for traitKey, traitValue in pairs(posterTraits) do
+                            if otherCat.traits[traitKey] != traitValue then
                                 matches = false
                                 break
                             end
@@ -361,16 +352,35 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
                             break
                         end
                     end
-                end
-                
-                if isUnique then
-                    usedCatCombos[catComboKey] = true
-                    usedPosterCombos[posterComboKey] = true
-                    add(cats, Cat.new(TUXEDO_CAT, catTraits))
                     
-                    local catIndex = #cats
-                    local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
-                    add(posters, Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits))
+                    -- Check if this cat would match any existing poster
+                    if isUnique then
+                        for i = 1, #posters do
+                            local otherPoster = posters[i]
+                            local matches = true
+                            for traitKey, traitValue in pairs(otherPoster.traits) do
+                                if catTraits[traitKey] != traitValue then
+                                    matches = false
+                                    break
+                                end
+                            end
+                            if matches then
+                                isUnique = false
+                                break
+                            end
+                        end
+                    end
+                    
+                    if isUnique then
+                        usedCatCombos[catComboKey] = true
+                        usedPosterCombos[posterComboKey] = true
+                        add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                        
+                        local catIndex = #cats
+                        local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
+                        add(posters, Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits))
+                        foundValidPoster = true
+                    end
                 end
             end
         end
