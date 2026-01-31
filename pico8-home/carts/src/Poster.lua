@@ -6,16 +6,17 @@ Poster.new = function(name, traits)
     self.x = SCREEN_WIDTH / 2
     self.y = POSTER_NEW_DISPLAY_POS
     self.targetY = POSTER_TOP_DISPLAY_POS
+    self.speed = POSTER_PRINT_SPEED
 
     function self.update()
         -- adjust y to 'catch up' with targetY
         local diff = self.targetY - self.y
         local dist = abs(diff)
         if dist > 0 then
-            if dist <= POSTER_MOVE_SPEED then
+            if dist <= self.speed then
                 self.y = self.targetY
             else
-                self.y = self.y + sgn(diff) * POSTER_MOVE_SPEED
+                self.y = self.y + sgn(diff) * self.speed
             end
         end
     end

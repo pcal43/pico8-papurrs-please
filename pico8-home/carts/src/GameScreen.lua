@@ -189,6 +189,7 @@ GameScreen.new = function()
                 if selectedCat and not selectedCat.poster and #self.posters > 0 then
                     -- Assign the poster to the cat
                     selectedCat.poster = self.posters[1]
+                    selectedCat.poster.speed = POSTER_FLOAT_SPEED
                     selectedCat.poster.targetY = POSTER_BOT_DISPLAY_POS
                     
                     -- Remove the poster from the list
@@ -211,12 +212,15 @@ GameScreen.new = function()
     function self.update_checking()
         if self.scrollPos == self.targetPos then -- dont do anything yet if we're still scrolling to the next cat
             local cat = self.catList[self.scrollPos]
-            if cat.posterTargetY > POSTER_TOP_DISPLAY_POS then
-                -- the first time we see the it, its poster will be at the bottom.  start moving it up
-                cat.posterTargetY = POSTER_TOP_DISPLAY_POS
-            elseif  cat.posterY <= cat.posterTargetY then
-                -- otherwise, we wait for it to move to the target.  when it gets there...
-                self.targetPos += 1
+            if cat.poster then
+                if cat.poster.targetY > POSTER_TOP_DISPLAY_POS then
+                    -- the first time we see the it, its poster will be at the bottom.  start moving it up
+                    cat.poster.targetY = POSTER_TOP_DISPLAY_POS
+                elseif cat.poster.y <= cat.poster.targetY then
+                    -- otherwise, we wait for it to move to the target.  when it gets there...
+                    self.targetPos += 1
+                end
+            else
             end
         end
     end
