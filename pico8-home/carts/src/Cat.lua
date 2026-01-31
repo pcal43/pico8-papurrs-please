@@ -16,7 +16,7 @@ CatTemplate.new = function(spriteId)
         pal(11, traits[EYE_COLOR].outer)
         pal(4, 0) -- pupils are grey to distinguish from outline
 
-        spr(self.spriteId, x - 64 / 2, y - 64, 8, 8)
+        spr(self.spriteId, x - 64 / 2, y - 63, 8, 8)
         pal()
         palt()
 
