@@ -19,21 +19,8 @@ GameScreen.new = function()
     self.secondsRemaining = 60.0
     self._last_time = time()
 
-
-    self.catList = {}
+    self.posters, self.catList = generatePostersAndCats(10, 1, 1)
     self.catListSize = 10
-
-    self.posters = generatePosters(10, 1, 1)
-
-    for i=1,self.catListSize do
-        local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
-        local eidx = ((i - 1) % #TraitValues[EYE_COLOR]) + 1
-        local traits = {
-            [FUR_COLOR] = TraitValues[FUR_COLOR][fidx],
-            [EYE_COLOR] = TraitValues[EYE_COLOR][eidx]
-        }
-        self.catList[i] = Cat.new(TUXEDO_CAT, traits)
-    end
 
     function self.draw()
         cls(PEACH) -- offwhite background
@@ -242,4 +229,50 @@ GameScreen.new = function()
     end
 
     return self
+end
+
+
+
+-- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
+function generatePostersAndCats(count, minTraits, maxTraits)
+  printh("IN")
+    minTraits = requireNonNil(minTraits)
+    maxTraits = requireNonNil(maxTraits)
+    
+    local posters = {}
+    -- Get n unique integers to use as indices for cat names
+    local name_indeces = pickUniqueIntegers(count, 1, CAT_NAME_COUNT)
+    for i = 1, count do
+        -- determine how many traits this poster should have
+        local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
+        -- select random trait keys
+        local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
+        -- build traits map
+        local traits = {}
+        for j = 1, #traitKeys do
+            local traitKey = traitKeys[j]
+            local possibleValues = TraitValues[traitKey]
+            -- pick a random value using #
+            local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
+
+            traits[traitKey] = selectedValue  -- use trait key to create map
+        end
+        
+        local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")
+        add(posters, Poster.new(name, name_indeces[i] < CAT_NAME_FIRST_MALE, traits))
+    end
+
+    local cats = {}
+
+    for i=1,count do
+        local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
+        local eidx = ((i - 1) % #TraitValues[EYE_COLOR]) + 1
+        local traits = {
+            [FUR_COLOR] = TraitValues[FUR_COLOR][fidx],
+            [EYE_COLOR] = TraitValues[EYE_COLOR][eidx]
+        }
+        cats[i] = Cat.new(TUXEDO_CAT, traits)
+    end
+
+    return posters, cats
 end
