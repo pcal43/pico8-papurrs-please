@@ -43,14 +43,8 @@ GameScreen.new = function()
 
         -- draw poster at the top
 
-        local traitCount = 0
-        for _ in pairs(self.posters[1].traits) do
-            traitCount += 1
-        end
-        local t = self.posters[1].traits
-
-        printh(tostr(traitCount).."  vs "..tostr(#t))
-        local posterHeight = 2 + 8 + TEXT_HEIGHT + (2 * TRAIT_SPACING) +  (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
+        local traitCount = #self.posters[1].traits
+        local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) +  (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
 
         local rw = 84
         local rx = (128 - rw) / 2
@@ -71,7 +65,7 @@ GameScreen.new = function()
         local header_x = (128 - header_w) / 2
         local header_y = 0
         rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, 0)
-        self.print_center_top("lost cat!", 0, 1, 10) -- yellow text
+        self.print_center_top("lost cat!", 0, 5, 10, 2) -- yellow text
 
 
 
@@ -169,7 +163,7 @@ GameScreen.new = function()
  function self.print_center_top(text, line, y_margin, color, base_y)
     local w = #text * 8
     local x = (128 - w) / 2
-    local y = (base_y or 0) + (line * TEXT_HEIGHT) + (y_margin or 0)
+    local y = (base_y or 0) + ((line - 1) * TEXT_HEIGHT) + (y_margin or 0)
     local wide_text = "\^w"..text    
     print(wide_text, x, y, color or 1, true)
 end

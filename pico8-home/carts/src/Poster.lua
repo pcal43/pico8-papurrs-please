@@ -21,7 +21,7 @@ function generate_posters(count, minTraits, maxTraits)
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
         -- select random trait keys
         local traitKeys = get_unique_integers(numTraits, TRAIT_TYPE_COUNT)
-        -- build traits table
+        -- build traits array
         local traits = {}
         for j = 1, #traitKeys do
             local traitKey = traitKeys[j]
@@ -30,7 +30,7 @@ function generate_posters(count, minTraits, maxTraits)
             -- pick a random value using #
             local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
             
-            traits[traitKey] = selectedValue
+            add(traits, selectedValue)  -- use add() to append to array
         end
         
         local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")        
