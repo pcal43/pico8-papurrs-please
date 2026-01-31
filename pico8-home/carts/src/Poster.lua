@@ -53,10 +53,9 @@ Poster.new = function(name, isFemale, traits)
     -- traits in the given traits array.  Specifically, this is true if and only if there is
     -- no TraitKey 'x' such that self.traits[x] does not equal traits[x]
     function self.isMatch(traits)
-        requireMap(traits)
-        requireMap(self.traits)
+        requireNonNil(traits)
         printh("=== isMatch checking for "..self.name.." ===")
-        printh("poster has "..#self.traits.." traits")
+        printh("poster has "..mapSize(self.traits).." traits")
         for trait_key, trait_value in pairs(self.traits) do
             printh("checking trait_key="..trait_key)
             printh("  poster trait_value.name="..trait_value.name)
@@ -82,37 +81,6 @@ Poster.new = function(name, isFemale, traits)
     return self
 end
 
--- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
-function generatePosters(count, minTraits, maxTraits)
-  printh("IN")
-    minTraits = requireNonNil(minTraits)
-    maxTraits = requireNonNil(maxTraits)
-    
-    local posters = {}
-    -- Get n unique integers to use as indices for cat names
-    local name_indeces = pickUniqueIntegers(count, 1, CAT_NAME_COUNT)
-    for i = 1, count do
-        -- determine how many traits this poster should have
-        local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-        -- select random trait keys
-        local traitKeys = pickUniqueIntegers(numTraits, 1, TRAIT_TYPE_COUNT)
-        -- build traits map
-        local traits = {}
-        for j = 1, #traitKeys do
-            local traitKey = traitKeys[j]
-            local possibleValues = TraitValues[traitKey]
-            -- pick a random value using #
-            local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
-
-            traits[traitKey] = selectedValue  -- use trait key to create map
-        end
-        
-        local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")
-        add(posters, Poster.new(name, name_indeces[i] < CAT_NAME_FIRST_MALE, traits))
-    end
-      printh("OUT")
-    return posters
-end
 
 
 -- Cat names stored as comma-delimited string to save tokens

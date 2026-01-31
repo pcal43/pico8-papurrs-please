@@ -19,7 +19,7 @@ GameScreen.new = function()
     self.secondsRemaining = 60.0
     self._last_time = time()
 
-    self.posters, self.catList = generatePostersAndCats(10, 1, 1, {FUR_COLOR, EYE_COLOR})
+    self.posters, self.catList = generatePostersAndCats(10, 2, 2, {FUR_COLOR, EYE_COLOR})
     self.catListSize = 10
 
     function self.draw()
@@ -380,6 +380,9 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
     if #cats < count then
         printh("could only generate "..#cats.." unique cat/poster pairs (requested "..count..")")
     end
+    
+    -- Shuffle cats so they're not in the same order as posters
+    shuffleArray(cats)
     
     return posters, cats
 end

@@ -86,6 +86,14 @@ function pickUniqueIntegers(count, minValue, maxValue)
     return results
 end
 
+function shuffleArray(arr)
+    for i = #arr, 2, -1 do
+        local j = flr(rnd(i)) + 1
+        arr[i], arr[j] = arr[j], arr[i]
+    end
+    return arr
+end
+
 -- Returns true if the table is empty or has only consecutive integer keys starting at 1
 function isArray(t)
     if type(t) ~= "table" then return false end
@@ -97,24 +105,11 @@ function isArray(t)
     return #t == count
 end
 
--- Returns true if the table is a map (not an array)
--- Arrays have consecutive integer keys 1,2,3... Maps have sparse/non-sequential keys
-function isMap(t)
-    if type(t) ~= "table" then return false end
-    return not isArray(t)
-end
-
 -- Assertions
 function requireArray(val, name)
     requireNonNil(val)
     name = name or "value"
     assert(isArray(val), name.." must be a sequential array; found "..type(val))
-end
-
-function requireMap(val, name)
-    requireNonNil(val)
-    name = name or "value"
-    assert(isMap(val), name.." must be a key-value map; found "..type(val))
 end
 
 function mapSize(val)
