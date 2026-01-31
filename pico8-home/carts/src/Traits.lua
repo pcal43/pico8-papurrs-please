@@ -1,18 +1,16 @@
 
 
+FUR_COLOR = 1
+FUR_PATTERN = 2
+EYE_COLOR = 3
+COLLAR = 4
+TRAIT_TYPE_COUNT = 4
 
-TraitKeys= {
-    FUR_COLOR = 1,
-    FUR_PATTERN = 2,
-    EYE_COLOR = 3,
-    COLLAR = 4,
-    COUNT = 4
-}
 
 
 TraitValues = {}
 
-TraitValues[TraitKeys.FUR_PATTERN] = {
+TraitValues[FUR_PATTERN] = {
    {
      name = "solid color"
    },
@@ -24,7 +22,7 @@ TraitValues[TraitKeys.FUR_PATTERN] = {
    },
 }
 
-TraitValues[TraitKeys.COLLAR] = {
+TraitValues[COLLAR] = {
     {
       name = "no collar",
       color = -1
@@ -39,7 +37,7 @@ TraitValues[TraitKeys.COLLAR] = {
     }
 }
 
-TraitValues[TraitKeys.FUR_COLOR] = {
+TraitValues[FUR_COLOR] = {
    {
      name = "white fur",
      fur = 7,
@@ -82,7 +80,7 @@ TraitValues[TraitKeys.FUR_COLOR] = {
    }
 }
 
-TraitValues[TraitKeys.EYE_COLOR] = {
+TraitValues[EYE_COLOR] = {
    {
      name = "green eyes",
      inner = 3,
@@ -99,13 +97,6 @@ TraitValues[TraitKeys.EYE_COLOR] = {
      outer = 10
    }
 }
-
-
--- Returns a list of 'count' cat names randomly chosen from a list.  Names are guaranteed to be
--- unique by calling the get_unique function
-function get_names(count)
-
-end
 
 
 

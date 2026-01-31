@@ -16,19 +16,14 @@ function generate_posters(count, minTraits, maxTraits)
     local posters = {}
     -- Get n unique integers to use as indices for cat names
     local name_indeces = get_unique_integers(count, CAT_NAME_COUNT)
-    printh("----")
     for i = 1, count do
-          printh("---!!!-")
         -- determine how many traits this poster should have
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-        printh('numTraits = '..tostr(numTraits).." "..tostr(TraitKeys.COUNT))
         -- select random trait keys
-        local traitKeys = get_unique_integers(numTraits, TraitKeys.COUNT)
-        printh('traitKeys = '..tostr(traitKeys[1]))
+        local traitKeys = get_unique_integers(numTraits, TRAIT_TYPE_COUNT)
         -- build traits table
         local traits = {}
         for j = 1, #traitKeys do
-          printh("---??-")          
             local traitKey = traitKeys[j]
             local possibleValues = TraitValues[traitKey]
             
@@ -36,7 +31,6 @@ function generate_posters(count, minTraits, maxTraits)
             local selectedValue = possibleValues[flr(rnd(#possibleValues)) + 1]
             
             traits[traitKey] = selectedValue
-            printh("trait set"..tostr(traitKey).." "..tostr(traits[traitKey]))
         end
         
         local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")        

@@ -7,6 +7,9 @@ GameScreen.new = function()
     local POSTER_NEW_DISPLAY_POS = -30
     local POSTER_MOVE_SPEED = 4
 
+    local TEXT_HEIGHT = 6
+    local TRAIT_SPACING = 1
+
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = true
@@ -18,15 +21,15 @@ GameScreen.new = function()
     self.catList = {}
     self.catListSize = 10
 
-    self.posters = generate_posters(10, 2, 3)
+    self.posters = generate_posters(10)
 
 
     for i=1,self.catListSize do
-        local fidx = ((i - 1) % #TraitValues[TraitKeys.FUR_COLOR]) + 1
-        local eidx = ((i - 1) % #TraitValues[TraitKeys.EYE_COLOR]) + 1
+        local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
+        local eidx = ((i - 1) % #TraitValues[EYE_COLOR]) + 1
         local traits = {
-            [TraitKeys.FUR_COLOR] = TraitValues[TraitKeys.FUR_COLOR][fidx],
-            [TraitKeys.EYE_COLOR] = TraitValues[TraitKeys.EYE_COLOR][eidx]
+            [FUR_COLOR] = TraitValues[FUR_COLOR][fidx],
+            [EYE_COLOR] = TraitValues[EYE_COLOR][eidx]
         }
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
@@ -44,17 +47,25 @@ GameScreen.new = function()
         local header_x = (128 - header_w) / 2
         local header_y = 0
 
+
         -- draw poster at the top
-        local rw, rh = 84, 44
+
+        local traitCount = 0
+        for _ in pairs(self.posters[1].traits) do
+            traitCount += 1
+        end
+        local posterHeight = 2 + 8 + TEXT_HEIGHT + (2 * TRAIT_SPACING) +  (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
+
+        local rw = 84
         local rx = (128 - rw) / 2
-        rectfill(rx, self.posterY, rx + rw - 1, self.posterY + rh - 1, 7)
-        rect(rx, self.posterY, rx + rw - 1,  self.posterY + rh - 1, 5)
-        self.print_center_top(self.posters[1].name, 1, 2, 1, self.posterY + 9)
+        rectfill(rx, self.posterY, rx + rw - 1, self.posterY + posterHeight, 7) --  white
+        rect(rx, self.posterY, rx + rw - 1,  self.posterY + posterHeight, 5) -- outline
+
+        self.print_center_top(self.posters[1].name, 1, 2, 1, self.posterY + 2)
         
         -- print traits
-        local trait_line = 2
+        local trait_line = 1
         for trait_key, trait_value in pairs(self.posters[1].traits) do
-            printh("---"..trait_value.name)
             self.print_center_top(trait_value.name, trait_line, 4, 1, self.posterY + 9)
             trait_line = trait_line + 1
         end
@@ -158,10 +169,9 @@ GameScreen.new = function()
     end
 
  function self.print_center_top(text, line, y_margin, color, base_y)
-    local TEXT_HEIGHT = 6
     local w = #text * 8
     local x = (128 - w) / 2
-    local y = (base_y or 0) + (line * TEXT_HEIGHT) + (y_margin or 0)
+    local y = (base_y or 0) + ((line - 1) * TEXT_HEIGHT) + (y_margin or 0)
     local wide_text = "\^w"..text    
     print(wide_text, x, y, color or 1, true)
 end
