@@ -28,8 +28,6 @@ Controller.new = function()
     end
 
     function self.draw()
-
-
         if (activeScreen != nil) activeScreen.draw()
     end
 

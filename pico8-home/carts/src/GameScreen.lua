@@ -2,11 +2,15 @@ local GameScreen = {}
 GameScreen.new = function()
     local self = {}
 
+
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = true
     self.secondsRemaining = 60.0
     self._last_time = time()
+
+    self.state = STATE_PICKING
+
 
     self.catList = {}
     self.catListSize = 10
@@ -41,10 +45,8 @@ GameScreen.new = function()
         self.print_center_top("lost cat!", 0, 5, 10, 2) -- yellow text
 
 
-
         -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
         palt(0, false) -- black is black, beige is transparent
-        local CLOCK_MARGIN = 2
 
         -- left icon and catsRemaining beneath
         local left_x = CLOCK_MARGIN
@@ -162,12 +164,6 @@ end
 
 
 
-    local SCREEN_WIDTH = 128
-    local SCREEN_HEIGHT = 128
-    local SPACE_BETWEEN_CATS = 12
-    local CAT_Y_POS = SCREEN_HEIGHT - 4
-    local CAT_WIDTH = 64
-
     function self.draw_cat_list(scrollPos)
         local base_index = flr(scrollPos)
         local frac = scrollPos - base_index
@@ -182,9 +178,6 @@ end
             end
         end
     end
-
-
-
 
     return self
 end
