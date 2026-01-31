@@ -18,15 +18,15 @@ GameScreen.new = function()
     self.catList = {}
     self.catListSize = 10
 
-    self.posters = generate_posters(10)
+    self.posters = generate_posters(10, 2, 3)
 
 
     for i=1,self.catListSize do
         local fidx = ((i - 1) % #TraitValues[TraitKeys.FUR_COLOR]) + 1
         local eidx = ((i - 1) % #TraitValues[TraitKeys.EYE_COLOR]) + 1
         local traits = {
-            [TraitKeys.FUR_COLOR] = TraitValues[TraitKeys.FUR_COLOR],
-            [TraitKeys.EYE_COLOR] = TraitValues[TraitKeys.EYE_COLOR]
+            [TraitKeys.FUR_COLOR] = TraitValues[TraitKeys.FUR_COLOR][fidx],
+            [TraitKeys.EYE_COLOR] = TraitValues[TraitKeys.EYE_COLOR][eidx]
         }
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
@@ -44,7 +44,6 @@ GameScreen.new = function()
         local header_x = (128 - header_w) / 2
         local header_y = 0
 
-
         -- draw poster at the top
         local rw, rh = 84, 44
         local rx = (128 - rw) / 2
@@ -55,6 +54,7 @@ GameScreen.new = function()
         -- print traits
         local trait_line = 2
         for trait_key, trait_value in pairs(self.posters[1].traits) do
+            printh("---"..trait_value.name)
             self.print_center_top(trait_value.name, trait_line, 4, 1, self.posterY + 9)
             trait_line = trait_line + 1
         end

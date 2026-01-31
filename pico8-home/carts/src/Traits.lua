@@ -6,7 +6,9 @@ TraitKeys= {
     FUR_PATTERN = 2,
     EYE_COLOR = 3,
     COLLAR = 4,
+    COUNT = 4
 }
+
 
 TraitValues = {}
 

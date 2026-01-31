@@ -10,7 +10,6 @@ CatTemplate.new = function(spriteId)
     function self.draw(x, y, traits)
         palt(0, false) -- black is black, beige is transparent
         palt(15, true)
-        printh(tostr(traits))
         pal(1, traits[TraitKeys.FUR_COLOR].fur)
         pal(7, traits[TraitKeys.FUR_COLOR].whiskers)
         pal(9, traits[TraitKeys.FUR_COLOR].nose)
@@ -40,8 +39,6 @@ Cat.new = function(catTemplate, traits)
 
     function self.draw(x, y)
       requireNonNil(traits)
-        printh(tostr(traits))
-        printh("-------")      
         self.catTemplate.draw(x, y, traits)
     end
 
