@@ -2,6 +2,15 @@ local GameScreen = {}
 GameScreen.new = function()
     local self = {}
 
+    -- states
+    local PICKING = 0
+    local TIMES_UP = 1
+    local PICKING_DONE = 2
+    local CHECKING = 3
+    local CHECKING_DONE = 4
+
+    self.state = PICKING
+    self.message = "lost cat!"
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = false
@@ -24,7 +33,6 @@ GameScreen.new = function()
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
 
-
     function self.draw()
         cls(PEACH) -- offwhite background
 
@@ -36,7 +44,7 @@ GameScreen.new = function()
         local header_x = (128 - header_w) / 2
         local header_y = 0
         rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, BLACK)
-        print_center_top("lost cat!", 0, 5, YELLOW, 2) -- yellow text
+        print_center_top(self.message, 0, 5, YELLOW, 2) -- yellow text
 
 
         -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
@@ -71,7 +79,12 @@ GameScreen.new = function()
     end
 
     function self.update()
+        if self.state == PICKING then
+            self.update_picking()
+        end
+    end
 
+    function self.update_picking()
         -- update countdown
         local now = time()
         local dt = now - (self._last_time or now)
@@ -81,6 +94,8 @@ GameScreen.new = function()
                 self.secondsRemaining = self.secondsRemaining - dt
             else
                 self.secondsRemaining = 0
+                self.state = TIMES_UP
+                self.message = "times up!"
             end
         end
 
@@ -108,17 +123,22 @@ GameScreen.new = function()
                 -- to the cat that is in the middle of the screen
                 
                 local selectedCat = self.catList[self.targetPos]
-                if selectedCat and not selectedCat.poster and #self.posters > 0 then
-                    -- Assign the poster to the cat
-                    selectedCat.poster = self.posters[1]
-                    
-                    -- Remove the poster from the list
-                    del(self.posters, self.posters[1])
-                    
-                    -- Animate the next poster moving down
-                    if #self.posters > 0 then
-                        self.posters[1].y = POSTER_NEW_DISPLAY_POS
-                        self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                if selectedCat and not selectedCat.poster then
+                    if  #self.posters < 1 then
+                        self.state = PICKING_DONE
+                        self.message = "all picked!"
+                    else
+                        -- Assign the poster to the cat
+                        selectedCat.poster = self.posters[1]
+                        
+                        -- Remove the poster from the list
+                        del(self.posters, self.posters[1])
+                        
+                        -- Animate the next poster moving down
+                        if #self.posters > 0 then
+                            self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                            self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                        end
                     end
                 end
                 
