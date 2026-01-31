@@ -17,7 +17,7 @@ TitleScreen.new = function()
     end
     
     function self.draw()
-        cls(DARK_BLUE) -- dark blue background
+        cls(PEACH) -- dark blue background
         
         -- Draw title
         local title = "lost cats!"

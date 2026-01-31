@@ -20,7 +20,7 @@ DaySplashScreen.new = function(day)
     end
     
     function self.draw()
-        cls(DARK_BLUE) -- dark blue background
+        cls(PEACH) -- dark blue background
         
         -- Draw day name
         local day_text = self.day_name
