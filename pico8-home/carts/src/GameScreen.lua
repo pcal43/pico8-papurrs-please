@@ -107,9 +107,29 @@ GameScreen.new = function()
             end
         elseif btn(4) then
             if self.canPress then
-
-
+                -- If they press the action button, that means they think
+                -- the currently-selected cat is the lost cat described in the 
+                -- current poster.  Check if the cat has a poster; if it does not, 
+                -- Pop the current poster ([1]) off self.posters and assign it
+                -- to the cat that is in the middle of the screen
+                
+                local selectedCat = self.catList[self.targetPos]
+                if selectedCat and not selectedCat.poster and #self.posters > 0 then
+                    -- Assign the poster to the cat
+                    selectedCat.poster = self.posters[1]
+                    
+                    -- Remove the poster from the list
+                    del(self.posters, self.posters[1])
+                    
+                    -- Animate the next poster moving down
+                    if #self.posters > 0 then
+                        self.posterY = POSTER_NEW_DISPLAY_POS
+                        self.targetPosterY = POSTER_TOP_DISPLAY_POS
+                    end
+                end
+                
                 self.canPress = false
+            end
         else
             self.canPress = true
         end

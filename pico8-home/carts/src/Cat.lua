@@ -44,9 +44,9 @@ Cat.new = function(catTemplate, traits)
         requireNonNil(traits)
         if self.poster then
             self.poster.draw(self.posterY)
+        end
         self.catTemplate.draw(x, y, traits)
     end
 
     return self
 end
-
