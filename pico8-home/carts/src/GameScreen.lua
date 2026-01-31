@@ -2,14 +2,6 @@ local GameScreen = {}
 GameScreen.new = function()
     local self = {}
 
-    local POSTER_TOP_DISPLAY_POS = 9
-    local POSTER_BOT_DISPLAY_POS = 118
-    local POSTER_NEW_DISPLAY_POS = -30
-    local POSTER_MOVE_SPEED = 4
-
-    local TEXT_HEIGHT = 6
-    local TRAIT_SPACING = 1
-
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = true

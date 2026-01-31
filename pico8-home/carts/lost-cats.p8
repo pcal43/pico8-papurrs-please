@@ -3,13 +3,8 @@ version 41
 __lua__
 
 
-function requireNonNil(x, msg) 
-    assert(x ~= nil, msg or "unexpected nil value")
-    return x
-end
 
-
-
+#include src/Global.lua
 #include src/Traits.lua
 #include src/Poster.lua
 #include src/Cat.lua

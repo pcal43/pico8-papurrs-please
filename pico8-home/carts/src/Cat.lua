@@ -36,6 +36,9 @@ Cat.new = function(catTemplate, traits)
     local self = {}
     self.catTemplate = requireNonNil(catTemplate)
     self.traits = requireNonNil(traits)
+    self.poster = nil
+    self.posterY = -1
+    self.posterTargetY = POSTER_BOT_DISPLAY_POS
 
     function self.draw(x, y)
       requireNonNil(traits)
