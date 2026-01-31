@@ -51,7 +51,6 @@ Poster.new = function(name, traits)
     return self
 end
 
-
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
 function generate_posters(count, minTraits, maxTraits)
     minTraits = minTraits or 2
@@ -86,8 +85,10 @@ end
 
 
 -- Cat names stored as comma-delimited string to save tokens
-CAT_NAMES = "angel,apollo,ash,athena,aurora,baby,bailey,bambi,bandit,bear,bella,blaze,boo,boots,buddy,butterball,butterscotch,buttons,callie,candy,cappuccino,caramel,casper,chaos,charlie,charm,cheeto,cherry,chester,chip,chloe,cloudfur,cinnamon,cleo,clover,cocoa,coconut,comet,cookie,copper,cricket,cuddles,daffodil,daisy,diamond,doodle,duke,dusty,echo,ember,espresso,faith,fawn,felix,fiona,flash,fluffy,freckles,garfield,george,ghost,ginger,gizmo,glitter,goose,gracie,gravy,gypsy,harley,harmony,hazel,hercules,hobbes,honey,hope,indigo,iris,ivy,jack,jade,jasper,jazz,jewel,jinx,jojo,karma,kiki,kitty,kiwi,latte,lavender,legend,leo,licorice,lightning,lily,loki,lollipop,lotus,louie,lulu,lucy,lucky,luna,maggie,mango,maple,marble,marshmallow,marvel,max,mercury,midnight,milo,mischief,misty,mittens,mocha,molly,moonlight,moose,mopsy,muffin,murphy,mystic,nachos,nala,ninja,noodle,nova,nugget,nutmeg,oak,olive,oliver,onyx,opal,oreo,oscar,pandora,patches,pearl,peanut,penny,pepper,phoebe,precious,princess,pumpkin,quincy,rascal,rocky,romeo,rosie,ruby,rusty,salem,sam,scarlett,scout,sebastian,shadow,simba,smokey,snickers,snowball,socks,sophie,storm,sugar,tabby,taco,tiger,tilly,toby,tucker,violet,waffle,whiskers,whisper,willow,yoshi,zeus,ziggy,zoe"
-CAT_NAME_COUNT = 185
+CAT_NAMES = "angel,athena,aurora,baby,bambi,bella,callie,candy,charm,cherry,chloe,cinnamon,cleo,clover,cloudfur,cocoa,cookie,daffodil,daisy,diamond,dusty,echo,faith,fawn,fiona,fluffy,ginger,glitter,gracie,gypsy,harley,harmony,hazel,honey,hope,indigo,iris,ivy,jade,jazz,jewel,jinx,jojo,karma,kiki,kitty,kiwi,latte,lavender,licorice,lily,lollipop,lotus,lulu,lucy,luna,maggie,mango,maple,marble,marshmallow,mischief,misty,mittens,mocha,molly,moonlight,mopsy,muffin,mystic,nala,nova,olive,onyx,opal,pandora,pearl,penny,pepper,phoebe,precious,princess,pumpkin,rosie,ruby,scarlett,scout,sophie,sugar,tabby,tilly,violet,willow,zoe,apollo,ash,bailey,bandit,bear,blaze,boo,boots,buddy,butterball,butterscotch,buttons,cappuccino,caramel,casper,chaos,charlie,cheeto,chester,chip,coconut,comet,copper,cricket,cuddles,doodle,duke,ember,espresso,felix,flash,freckles,garfield,george,ghost,gizmo,goose,gravy,hercules,hobbes,jack,jasper,legend,leo,lightning,loki,louie,lucky,marvel,max,mercury,midnight,milo,moose,murphy,nachos,ninja,noodle,nugget,nutmeg,oak,oliver,oreo,oscar,patches,peanut,quincy,rascal,rocky,romeo,rusty,salem,sam,sebastian,shadow,simba,smokey,snickers,snowball,socks,storm,taco,tiger,toby,tucker,waffle,whiskers,whisper,yoshi,zeus,ziggy"
+
+CAT_NAME_COUNT = 184
+CAT_NAME_FIRST_MALE = 94
 
 function get_cat_name(n) 
   local count = 0
