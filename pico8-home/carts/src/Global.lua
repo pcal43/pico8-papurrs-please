@@ -36,12 +36,14 @@ TEXT_HEIGHT = 6
 TRAIT_SPACING = 1
 
 FUR_COLOR = 1
-FUR_PATTERN = 2
-EYE_COLOR = 3
+EYE_COLOR = 2
+FUR_PATTERN = 3
 EAR_COLOR = 4
 COLLAR = 5
-TRAIT_TYPE_COUNT = 5
+TRAIT_TYPE_COUNT = 2 -- FIXME
 
+MATCH_ICON = 12
+BAD_MATCH_ICON = 14
 
 
 
@@ -59,3 +61,27 @@ function print_center_top(text, line, y_margin, color, base_y)
     print(wide_text, x, y, color or 1, true)
 end
 
+function get_unique_integers(count, minValue, maxValue)
+  local pool = {}
+  local results = {}
+  
+  -- 1. fill the pool with all possible numbers
+  for i=minValue,maxValue do 
+    add(pool, i) 
+  end
+  
+  -- 2. pick 'count' numbers from the pool
+  for i=1,count do
+    -- pick a random index based on current pool size
+    local idx = flr(rnd(#pool)) + 1
+    
+    -- add the value at that index to our results
+    local val = pool[idx]
+    add(results, val)
+    
+    -- remove it from the pool so it can't be picked again
+    del(pool, val)
+  end
+  
+  return results
+end

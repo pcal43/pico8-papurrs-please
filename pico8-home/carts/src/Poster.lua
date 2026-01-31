@@ -49,23 +49,36 @@ Poster.new = function(name, isFemale, traits)
         end
     end
 
+    -- return true if all of the traits in this Lost Cat Poster are satisfied by all of the
+    -- traits in the given traits array.  Specifically, this is true if and only if there is
+    -- no TraitKey 'x' such that self.traits[x] does not equal traits[x]
+    function self.isMatch(traits)
+        for trait_key, trait_value in pairs(self.traits) do
+            if traits[trait_key] != trait_value then
+                return false
+            end
+        end
+        return true
+    end
+
 
     return self
 end
 
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
 function generate_posters(count, minTraits, maxTraits)
-    minTraits = minTraits or 2
-    maxTraits = maxTraits or 4
+  printh("IN")
+    minTraits = requireNonNil(minTraits)
+    maxTraits = requireNonNil(maxTraits)
     
     local posters = {}
     -- Get n unique integers to use as indices for cat names
-    local name_indeces = get_unique_integers(count, CAT_NAME_COUNT)
+    local name_indeces = get_unique_integers(count, 1, CAT_NAME_COUNT)
     for i = 1, count do
         -- determine how many traits this poster should have
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
         -- select random trait keys
-        local traitKeys = get_unique_integers(numTraits, TRAIT_TYPE_COUNT)
+        local traitKeys = get_unique_integers(numTraits, 1, TRAIT_TYPE_COUNT)
         -- build traits array
         local traits = {}
         for j = 1, #traitKeys do
@@ -81,7 +94,7 @@ function generate_posters(count, minTraits, maxTraits)
         local name = requireNonNil(get_cat_name(name_indeces[i]), "nil cat name returned ("..name_indeces[i]..")")
         add(posters, Poster.new(name, name_indeces[i] < CAT_NAME_FIRST_MALE, traits))
     end
-    
+      printh("OUT")
     return posters
 end
 
@@ -107,30 +120,4 @@ function get_cat_name(n)
     end
   end
   return nil
-end
-
--- Return a list of n unique integers, the maximium value of which is maxValue
-function get_unique_integers(n, maxValue)
-  local pool = {}
-  local results = {}
-  
-  -- 1. fill the pool with all possible numbers
-  for i=1,maxValue do 
-    add(pool, i) 
-  end
-  
-  -- 2. pick 'n' numbers from the pool
-  for i=1,n do
-    -- pick a random index based on current pool size
-    local idx = flr(rnd(#pool)) + 1
-    
-    -- add the value at that index to our results
-    local val = pool[idx]
-    add(results, val)
-    
-    -- remove it from the pool so it can't be picked again
-    del(pool, val)
-  end
-  
-  return results
 end

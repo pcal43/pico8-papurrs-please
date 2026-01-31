@@ -23,7 +23,7 @@ GameScreen.new = function()
     self.catList = {}
     self.catListSize = 10
 
-    self.posters = generate_posters(10)
+    self.posters = generate_posters(10, 1, 2)
 
     for i=1,self.catListSize do
         local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
@@ -208,19 +208,28 @@ GameScreen.new = function()
         end
     end
 
-
     function self.update_checking()
         if self.scrollPos == self.targetPos then -- dont do anything yet if we're still scrolling to the next cat
             local cat = self.catList[self.scrollPos]
-            if cat.poster then
-                if cat.poster.targetY > POSTER_TOP_DISPLAY_POS then
+            local poster = cat.poster
+            if poster then
+                if poster.targetY > POSTER_TOP_DISPLAY_POS then
                     -- the first time we see the it, its poster will be at the bottom.  start moving it up
-                    cat.poster.targetY = POSTER_TOP_DISPLAY_POS
-                elseif cat.poster.y <= cat.poster.targetY then
+                    poster.targetY = POSTER_TOP_DISPLAY_POS
+                elseif poster.y <= poster.targetY then
                     -- otherwise, we wait for it to move to the target.  when it gets there...
-                    local pronoun = cat.poster.isFemale and "her" or "him"
+                    local pronoun = poster.isFemale and "her" or "him"
                     self.message = "is this "..pronoun.."?"
-                    self.targetPos += 1
+                    if poster.isMatch(cat.traits) then
+                        cat.adornmentSpriteId = MATCH_ICON
+                    else 
+                        cat.adornmentSpriteId = BAD_MATCH_ICON
+                    end
+                    if self.targetPos < #self.catList then
+                        self.targetPos += 1
+                    else
+                        self.state = CHECKING_DONE
+                    end
                 end
             else
             end

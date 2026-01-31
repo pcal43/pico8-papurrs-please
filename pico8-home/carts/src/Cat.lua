@@ -35,6 +35,7 @@ Cat.new = function(catTemplate, traits)
     self.traits = requireNonNil(traits)
     self.poster = nil
     self.x = SCREEN_WIDTH / 2
+    self.adornmentSpriteId = nil
 
     function self.update()
         if self.poster then
@@ -46,9 +47,14 @@ Cat.new = function(catTemplate, traits)
     function self.draw()
         requireNonNil(traits)
         self.catTemplate.draw(self.x, CAT_Y_POS, traits)
+        if self.adornmentSpriteId then
+            spr(self.adornmentSpriteId, self.x - 8, CAT_Y_POS - 63 - 16, 2, 2)
+        end
         if self.poster then
             self.poster.draw()
         end
+
+
     end
 
     return self
