@@ -11,34 +11,34 @@ TraitKeys= {
 TraitValues = {}
 
 TraitValues[TraitKeys.FUR_PATTERN] = {
-   SOLID = {
+   {
      name = "solid color"
    },
-   STRIPED = {
+   {
      name = "striped"
    },
-   CALICO = {
+   {
      name = "calico"
    },
 }
 
 TraitValues[TraitKeys.COLLAR] = {
-    NO_COLLAR = {
+    {
       name = "no collar",
       color = -1
     },
-    PINK_COLLAR = {
+    {
       name = "pink collar",
       color = 14
     },
-    GREEN_COLLAR = {
+    {
       name = "green collar",
       color = 3
     }
 }
 
 TraitValues[TraitKeys.FUR_COLOR] = {
-   WHITE = {
+   {
      name = "white fur",
      fur = 7,
      stripes = 6,
@@ -46,7 +46,7 @@ TraitValues[TraitKeys.FUR_COLOR] = {
      nose = 14,
      outline = 0
    },
-   ORANGE = {
+   {
      name = "orange fur",
      fur = 9,
      stripes = 4,
@@ -54,7 +54,7 @@ TraitValues[TraitKeys.FUR_COLOR] = {
      nose = 14,
      outline = 0
    },
-   GRAY = {
+   {
      name = "gray fur",
      fur = 5,
      stripes = 6,
@@ -62,7 +62,7 @@ TraitValues[TraitKeys.FUR_COLOR] = {
      nose = 9,
      outline = 0
    },
-   BLACK = {
+   {
      name = "black fur",
      fur = 0,
      stripes = 1,
@@ -70,7 +70,7 @@ TraitValues[TraitKeys.FUR_COLOR] = {
      nose = 9,
      outline = 5
    },
-   BROWN = {
+   {
      name = "brown fur",
      fur = 4,
      stripes = 9,
@@ -81,17 +81,17 @@ TraitValues[TraitKeys.FUR_COLOR] = {
 }
 
 TraitValues[TraitKeys.EYE_COLOR] = {
-   GREEN = {
+   {
      name = "green eyes",
      inner = 3,
      outer = 11
    },
-   BLUE = {
+   {
      name = "blue eys",
      inner = 13,
      outer = 12
    },
-   GOLDEN = {
+   {
      name = "golden eyes",
      inner = 9,
      outer = 10

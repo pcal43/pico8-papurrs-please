@@ -21,14 +21,12 @@ GameScreen.new = function()
     self.posters = generate_posters(10)
 
 
-    local fur_list = {FurColors.WHITE, FurColors.ORANGE, FurColors.GRAY, FurColors.BLACK, FurColors.BROWN}
-    local eye_list = {EyeColors.GREEN, EyeColors.BLUE, EyeColors.GOLDEN}
     for i=1,self.catListSize do
-        local fidx = ((i - 1) % #fur_list) + 1
-        local eidx = ((i - 1) % #eye_list) + 1
+        local fidx = ((i - 1) % #TraitValues[TraitKeys.FUR_COLOR]) + 1
+        local eidx = ((i - 1) % #TraitValues[TraitKeys.EYE_COLOR]) + 1
         local traits = {
-            [TraitKeys.FUR_COLOR] = fur_list[fidx],
-            [TraitKeys.EYE_COLOR] = eye_list[eidx]
+            [TraitKeys.FUR_COLOR] = TraitValues[TraitKeys.FUR_COLOR],
+            [TraitKeys.EYE_COLOR] = TraitValues[TraitKeys.EYE_COLOR]
         }
         self.catList[i] = Cat.new(TUXEDO_CAT, traits)
     end
