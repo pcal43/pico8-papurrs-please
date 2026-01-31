@@ -15,7 +15,6 @@ GameScreen.new = function()
 
     self.posters = generate_posters(10)
 
-
     for i=1,self.catListSize do
         local fidx = ((i - 1) % #TraitValues[FUR_COLOR]) + 1
         local eidx = ((i - 1) % #TraitValues[EYE_COLOR]) + 1
@@ -34,23 +33,7 @@ GameScreen.new = function()
         cls(15) -- offwhite background
 
         -- draw poster at the top
-
-        local traitCount = #self.posters[1].traits
-        local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) +  (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
-
-        local rw = 84
-        local rx = (128 - rw) / 2
-        rectfill(rx, self.posterY, rx + rw - 1, self.posterY + posterHeight, 7) --  white
-        rect(rx, self.posterY, rx + rw - 1,  self.posterY + posterHeight, 5) -- outline
-
-        self.print_center_top(self.posters[1].name, 1, 2, 1, self.posterY + 2)
-        
-        -- print traits
-        local trait_line = 1
-        for trait_key, trait_value in pairs(self.posters[1].traits) do
-            self.print_center_top(trait_value.name, trait_line, 4, 1, self.posterY + 9)
-            trait_line = trait_line + 1
-        end
+        self.posters[1].draw(self.posterY)
 
         local header_h = 9
         local header_w = 84
@@ -122,6 +105,11 @@ GameScreen.new = function()
                 end
                 self.canPress = false
             end
+        elseif btn(4) then
+            if self.canPress then
+
+
+                self.canPress = false
         else
             self.canPress = true
         end

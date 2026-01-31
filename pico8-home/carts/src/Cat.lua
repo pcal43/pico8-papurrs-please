@@ -37,11 +37,13 @@ Cat.new = function(catTemplate, traits)
     self.catTemplate = requireNonNil(catTemplate)
     self.traits = requireNonNil(traits)
     self.poster = nil
-    self.posterY = -1
+    self.posterY = POSTER_BOT_DISPLAY_POS
     self.posterTargetY = POSTER_BOT_DISPLAY_POS
 
     function self.draw(x, y)
-      requireNonNil(traits)
+        requireNonNil(traits)
+        if self.poster then
+            self.poster.draw(self.posterY)
         self.catTemplate.draw(x, y, traits)
     end
 
