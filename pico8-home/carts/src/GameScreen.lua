@@ -4,12 +4,14 @@ GameScreen.new = function()
 
     -- states
     local PICKING = 0
-    local TIMES_UP = 1
-    local PICKING_DONE = 2
-    local CHECKING = 3
-    local CHECKING_DONE = 4
+    local PICKING_DONE = 1
+    local CHECKING = 2
+    local CHECKING_DONE = 3
+
+    local MESSAGE_DELAY = 120
 
     self.state = PICKING
+    self.messageTimer = 0
     self.message = "lost cat!"
     self.scrollPos = 0
     self.targetPos = 1
@@ -37,7 +39,9 @@ GameScreen.new = function()
         cls(PEACH) -- offwhite background
 
         -- draw poster at the top
-        self.posters[1].draw(SCREEN_WIDTH/2)
+        if #self.posters > 0 then
+            self.posters[1].draw(SCREEN_WIDTH/2)
+        end
 
         local header_h = 9
         local header_w = 84
@@ -79,8 +83,28 @@ GameScreen.new = function()
     end
 
     function self.update()
+        self.messageTimer -= 1
+        
         if self.state == PICKING then
             self.update_picking()
+            if  #self.posters < 1 then
+                self.state = PICKING_DONE
+                self.message = "picking done!"
+                self.messageTimer = MESSAGE_DELAY               
+            elseif self.secondsRemaining <= 0 then
+                self.state = PICKING_DONE                
+                self.message = "times up!"
+                self.messageTimer = MESSAGE_DELAY                
+            end
+        elseif self.state == PICKING_DONE then
+            self.messageTimer -= 1
+            if self.messageTimer <= 0 then
+                self.state = CHECKING
+                self.messageTimer = 0
+                self.message = "let's check!"
+            end
+        elseif self.state == CHECKING then
+            self.update_checking()
         end
     end
 
@@ -94,8 +118,6 @@ GameScreen.new = function()
                 self.secondsRemaining = self.secondsRemaining - dt
             else
                 self.secondsRemaining = 0
-                self.state = TIMES_UP
-                self.message = "times up!"
             end
         end
 
@@ -123,25 +145,19 @@ GameScreen.new = function()
                 -- to the cat that is in the middle of the screen
                 
                 local selectedCat = self.catList[self.targetPos]
-                if selectedCat and not selectedCat.poster then
-                    if  #self.posters < 1 then
-                        self.state = PICKING_DONE
-                        self.message = "all picked!"
-                    else
-                        -- Assign the poster to the cat
-                        selectedCat.poster = self.posters[1]
-                        
-                        -- Remove the poster from the list
-                        del(self.posters, self.posters[1])
-                        
-                        -- Animate the next poster moving down
-                        if #self.posters > 0 then
-                            self.posters[1].y = POSTER_NEW_DISPLAY_POS
-                            self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
-                        end
+                if selectedCat and not selectedCat.poster and #self.posters > 0 then
+                    -- Assign the poster to the cat
+                    selectedCat.poster = self.posters[1]
+                    
+                    -- Remove the poster from the list
+                    del(self.posters, self.posters[1])
+                    
+                    -- Animate the next poster moving down
+                    if #self.posters > 0 then
+                        self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                        self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
                     end
                 end
-                
                 self.canPress = false
             end
         else
@@ -165,7 +181,11 @@ GameScreen.new = function()
         if #self.posters > 0 then
             self.posters[1].update()
         end
+    end
 
+
+    function self.update_checking()
+        -- TODO: implement checking logic
     end
 
 
@@ -182,6 +202,10 @@ GameScreen.new = function()
                 self.catList[catIndex].draw(xPos, CAT_Y_POS)
             end
         end
+    end
+
+    function self.isDone()
+        return self.state == CHECKING_DONE
     end
 
     return self

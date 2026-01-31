@@ -38,12 +38,7 @@ Controller.new = function()
                 
                 -- Create the game screen
                 self.current_screen = GameScreen.new()
-                
-                -- Picking phase
-                while #self.current_screen.posters > 0 and 
-                    self.current_screen.secondsRemaining > 0 do
-                    yield()
-                end
+                while not self.current_screen.isDone() do yield() end
                 
     --            -- Show message
     --            local msg = self.current_screen.secondsRemaining <= 0 
