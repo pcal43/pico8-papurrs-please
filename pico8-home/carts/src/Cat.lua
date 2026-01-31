@@ -1,6 +1,3 @@
-
-
-
 CatTemplate = {}
 CatTemplate.new = function(spriteId)
     local self = {}
@@ -42,10 +39,10 @@ Cat.new = function(catTemplate, traits)
 
     function self.draw(x, y)
         requireNonNil(traits)
-        if self.poster then
-            self.poster.draw(self.posterY)
-        end
         self.catTemplate.draw(x, y, traits)
+        if self.poster then
+            self.poster.draw(x, self.posterY)
+        end
     end
 
     return self

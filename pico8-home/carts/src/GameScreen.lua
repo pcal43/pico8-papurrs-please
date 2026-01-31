@@ -33,7 +33,7 @@ GameScreen.new = function()
         cls(15) -- offwhite background
 
         -- draw poster at the top
-        self.posters[1].draw(self.posterY)
+        self.posters[1].draw(SCREEN_WIDTH/2, self.posterY)
 
         local header_h = 9
         local header_w = 84

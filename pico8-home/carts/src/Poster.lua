@@ -5,18 +5,20 @@ Poster.new = function(name, traits)
     self.traits = requireNonNil(traits)
 
 
-    function self.draw(y)
+    function self.draw(x, y)
+        x = x or 64 -- default to center if not provided
+        local poster_x = x - POSTER_WIDTH / 2
+
         local traitCount = #self.traits
         local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
 
-        local rw = 84
-        local rx = (128 - rw) / 2
-        rectfill(rx, y, rx + rw - 1, y + posterHeight, 7) -- white
-        rect(rx, y, rx + rw - 1, y + posterHeight, 5) -- outline
+        local rx = poster_x
+        rectfill(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, 7) -- white
+        rect(rx, y, rx + POSTER_WIDTH - 1, y + posterHeight, 5) -- outline
 
         -- print name
         local name_w = #self.name * 8
-        local name_x = (128 - name_w) / 2
+        local name_x = poster_x + (POSTER_WIDTH - name_w) / 2
         local name_y = y + 2
         local wide_name = "\^w"..self.name
         print(wide_name, name_x, name_y, 1, true)
@@ -25,7 +27,7 @@ Poster.new = function(name, traits)
         local trait_line = 1
         for trait_key, trait_value in pairs(self.traits) do
             local trait_w = #trait_value.name * 8
-            local trait_x = (128 - trait_w) / 2
+            local trait_x = poster_x + (POSTER_WIDTH - trait_w) / 2
             local trait_y = y + 9 + ((trait_line - 1) * TEXT_HEIGHT) + 4
             local wide_trait = "\^w"..trait_value.name
             print(wide_trait, trait_x, trait_y, 1, true)
@@ -35,7 +37,6 @@ Poster.new = function(name, traits)
 
     return self
 end
-
 
 
 -- Returns a list of n Poster objects.  Every poster will be for a cat with a unique name.
