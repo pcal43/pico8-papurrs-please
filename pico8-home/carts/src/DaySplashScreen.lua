@@ -1,9 +1,8 @@
 local DaySplashScreen = {}
-DaySplashScreen.new = function(day)
+DaySplashScreen.new = function(weekday)
     local self = {}
     
-    local days = {"monday", "tuesday", "wednesday", "thursday", "friday"}
-    self.day_name = days[day] or "day "..day
+    self.day_name = weekday.name
     self.ready = false
     self.done = false
     

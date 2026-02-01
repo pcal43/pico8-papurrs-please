@@ -1,7 +1,8 @@
 
 TraitKeys = {
   FUR_COLOR,
-  EYE_COLOR
+  EYE_COLOR,
+  EAR_COLOR
 }
 
 TraitValues = {}
@@ -97,18 +98,15 @@ TraitValues[EYE_COLOR] = {
 TraitValues[EAR_COLOR] = {
    {
      name = "pink ears",
-     inner = DARK_GREEN,
-     outer = GREEN
+     color = PINK
    },
    {
      name = "white ears",
-     inner = INDIGO,
-     outer = BLUE
+     color = WHITE
    },
    {
      name = "black ears",
-     inner = ORANGE,
-     outer = YELLOW
+     inner = BLACK
    }
 }
 

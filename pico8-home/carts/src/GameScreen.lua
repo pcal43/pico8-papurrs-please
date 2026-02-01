@@ -1,5 +1,5 @@
 local GameScreen = {}
-GameScreen.new = function()
+GameScreen.new = function(weekday)
     local self = {}
 
     -- states
@@ -19,7 +19,7 @@ GameScreen.new = function()
     self.secondsRemaining = 60.0
     self._last_time = time()
 
-    self.posters, self.catList = generatePostersAndCats(10, 1, 2, {FUR_COLOR, EYE_COLOR})
+    self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
     self.catListSize = 10
 
     function self.draw()
@@ -77,7 +77,6 @@ GameScreen.new = function()
 
     function self.update()
         self.messageTimer -= 1
-        
         if self.state == PICKING then
             self.update_picking()
             if  #self.posters < 1 then
@@ -252,6 +251,12 @@ end
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
 function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
+    printh("!!")
+--    requireArray(posterTraitKeys)
+    --requireNonNil(count)
+    --requireNonNil(minTraits)
+    --requireNonNil(maxTraits)
+    printh("generatePosters".." x "..tostr(count).." x "..tostr(minTraits).." x "..tostr(maxTraits))
     minTraits = requireNonNil(minTraits)
     maxTraits = requireNonNil(maxTraits)
     posterTraitKeys = requireNonNil(posterTraitKeys)
@@ -261,7 +266,8 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
     
     -- Calculate maximum possible unique combinations
     local maxCombos = 1
-    for traitKey = 1, TRAIT_TYPE_COUNT do
+    for i = 1, #TraitKeys do
+        local traitKey = TraitKeys[i]
         maxCombos = maxCombos * #TraitValues[traitKey]
     end
     
@@ -286,7 +292,8 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
         -- Generate random cat trait combination
         local catTraits = {}
         local catComboKey = ""
-        for traitKey = 1, TRAIT_TYPE_COUNT do
+        for i = 1, #TraitKeys do
+            local traitKey = TraitKeys[i]
             local possibleValues = TraitValues[traitKey]
             local idx = flr(rnd(#possibleValues)) + 1
             catTraits[traitKey] = possibleValues[idx]
@@ -394,5 +401,6 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
     -- Shuffle cats so they're not in the same order as posters
     shuffleArray(cats)
     
+        printh("generateposters END")
     return posters, cats
 end

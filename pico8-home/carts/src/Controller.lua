@@ -31,13 +31,13 @@ Controller.new = function()
             while not btnp(4) do yield() end
             
             -- Play through the week
-            for day=1,7 do
+            for day=1,5 do
                 -- Day splash
-                self.current_screen = DaySplashScreen.new(day)
+                self.current_screen = DaySplashScreen.new(WEEKDAYS[day])
                 while not self.current_screen.isDone() do yield() end
                 
                 -- Create the game screen
-                self.current_screen = GameScreen.new()
+                self.current_screen = GameScreen.new(WEEKDAYS[day])
                 while not self.current_screen.isDone() do yield() end
                 
     --            -- Show message

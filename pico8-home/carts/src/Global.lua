@@ -40,12 +40,49 @@ EYE_COLOR = 2
 FUR_PATTERN = 3
 EAR_COLOR = 4
 COLLAR = 5
-TRAIT_TYPE_COUNT = 2 -- FIXME
 
 MATCH_ICON = 12
 BAD_MATCH_ICON = 14
 
 MAX_POSTER_CONFIG_ATTEMPTS = 50
+
+WEEKDAYS = {
+    {
+        name = "monday",
+        posters = 5,
+        traits = { FUR_COLOR },
+        minTraits = 1,
+        maxTraits = 1
+    },
+    {
+        name = "tuesday",
+        posters = 10,
+        traits = { FUR_COLOR, EYE_COLOR },
+        minTraits = 1,
+        maxTraits = 2
+    },
+    {
+        name = "wednesday",
+        posterCount = 15,
+        posterTraits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
+        minTraits = 2,
+        maxTraits = 3
+    },
+    {
+        name = "thursday",
+        posterCount = 15,
+        posterTraits = { FUR_COLOR, EYE_COLOR },
+        minTraits = 2,
+        maxTraits = 2
+    },
+    {
+        name = "friday",
+        posterCount = 15,
+        posterTraits = { FUR_COLOR, EYE_COLOR },
+        minTraits = 2,
+        maxTraits = 2
+    }
+}
 
 
 
