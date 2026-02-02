@@ -13,6 +13,7 @@ GameScreen.new = function(weekday)
     self.state = PICKING
     self.messageTimer = 0
     self.message = "lost cat!"
+    self.centerMessage = nil
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = false
@@ -72,6 +73,11 @@ GameScreen.new = function(weekday)
             if catIndex > 0 and catIndex <= #self.catList then
                 self.catList[catIndex].draw()
             end
+        end
+        
+        -- draw center message if present
+        if self.centerMessage then
+            printCentered(self.centerMessage, SCREEN_WIDTH/2, 48, DARK_BLUE)
         end
     end
 
@@ -197,6 +203,7 @@ GameScreen.new = function(weekday)
     function self.update_checking()
         if not self.checkingCoroutine then
             self.checkingCoroutine = cocreate(function()
+                local correct = 0
                 for i = 1, #self.catList do
                     self.targetPos = i
                     while self.scrollPos != self.targetPos do -- wait for scrolling to finish
@@ -217,6 +224,7 @@ GameScreen.new = function(weekday)
                         end
                         if cat.poster.isMatch(cat.traits) then
                             cat.adornmentSpriteId = MATCH_ICON
+                            correct += 1
                             sfx(SOUND_MEOW)
                         else
                             cat.adornmentSpriteId = BAD_MATCH_ICON
@@ -230,6 +238,35 @@ GameScreen.new = function(weekday)
                 for j = 1, 1 * TICKS_PER_SECOND do 
                     yield() 
                 end
+                self.scrollPos = #self.catList + 2
+                while self.scrollPos != self.targetPos do -- wait for scrolling to finish
+                    yield()
+                end
+                -- Show score summary
+                self.message = ""
+                
+                local scoreMessage = "\^wlost cats: "..#self.catList.."\n\^w    found: "..correct
+                
+                if correct == #self.catList then
+                    scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
+                end
+                
+                self.centerMessage = scoreMessage
+                
+                -- Wait before showing continue prompt
+                for j = 1, 1 * TICKS_PER_SECOND do 
+                    yield() 
+                end
+                
+                self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
+                
+                -- Wait for button press
+                while not btn(4) do
+                    yield()
+                end
+
+
+
                 self.state = CHECKING_DONE
                 self.checkingCoroutine = nil
             end)

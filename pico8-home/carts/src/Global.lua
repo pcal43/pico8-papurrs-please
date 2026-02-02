@@ -97,6 +97,43 @@ function requireNonNil(x, msg)
     return x
 end
 
+function printCentered(text, x, y, color)
+    local lines = {}
+    local current = ""
+    
+    -- Split text by \n
+    for i = 1, #text do
+        local char = sub(text, i, i)
+        if char == "\n" then
+            add(lines, current)
+            current = ""
+        else
+            current = current .. char
+        end
+    end
+    -- Add the last line
+    add(lines, current)
+    
+    -- Print each line centered
+    for i = 1, #lines do
+        local line = lines[i]
+        local charWidth = 4  -- default 4 pixels per character
+        local textLength = #line
+        
+        -- Check if line starts with wide text control character (chr(23))
+        if sub(line, 1, 1) == chr(6) and sub(line, 2, 2) == "w" then
+            charWidth = 8  -- wide characters are 8 pixels
+            textLength = textLength - 2  -- exclude control character from width calculation
+        end
+
+        
+        local w = textLength * charWidth
+        local lineX = x - w / 2
+        local lineY = y + (8 * (i - 1))
+        print(line, lineX, lineY, color or WHITE)
+    end
+end
+
 
 function print_center_top(text, line, y_margin, color, base_y)
     local w = #text * 8

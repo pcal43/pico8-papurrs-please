@@ -9,6 +9,17 @@ Poster.new = function(name, isFemale, traits)
     self.y = POSTER_NEW_DISPLAY_POS
     self.targetY = POSTER_TOP_DISPLAY_POS
     self.speed = POSTER_PRINT_SPEED
+    
+    -- Build trait text once
+    self.traitText = ""
+    local first = true
+    for trait_key, trait_value in pairs(traits) do
+        if not first then
+            self.traitText = self.traitText.."\n"
+        end
+        self.traitText = self.traitText.."\^w"..trait_value.name
+        first = false
+    end
 
     function self.update()
         -- adjust y to 'catch up' with targetY
@@ -31,22 +42,13 @@ Poster.new = function(name, isFemale, traits)
         rect(rx, self.y, rx + POSTER_WIDTH - 1, self.y + posterHeight, DARK_GRAY) -- outline
 
         -- print name
-        local name_w = #self.name * 8
-        local name_x = rx + (POSTER_WIDTH - name_w) / 2
         local name_y = self.y + 2
         local wide_name = "\^w"..self.name
-        print(wide_name, name_x, name_y, DARK_BLUE, true)
+        printCentered(wide_name, self.x, name_y, DARK_BLUE)
         
         -- print traits
-        local trait_line = 1
-        for trait_key, trait_value in pairs(self.traits) do
-            local trait_w = #trait_value.name * 8
-            local trait_x = rx + (POSTER_WIDTH - trait_w) / 2
-            local trait_y = self.y + 9 + ((trait_line - 1) * TEXT_HEIGHT) + 4
-            local wide_trait = "\^w"..trait_value.name
-            print(wide_trait, trait_x, trait_y, DARK_BLUE, true)
-            trait_line = trait_line + 1
-        end
+        local trait_y = self.y + 9 + 4
+        printCentered(self.traitText, self.x, trait_y, DARK_BLUE)
     end
 
     -- return true if all of the traits in this Lost Cat Poster are satisfied by all of the
