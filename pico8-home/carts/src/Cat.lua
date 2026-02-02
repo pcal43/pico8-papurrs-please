@@ -49,7 +49,7 @@ Cat.new = function(catTemplate, traits)
         requireNonNil(traits)
         self.catTemplate.draw(self.x, CAT_Y_POS, traits)
         if self.adornmentSpriteId then
-            spr(self.adornmentSpriteId, self.x - 8, CAT_Y_POS - 63 - 16, 2, 2)
+            spr(self.adornmentSpriteId, self.x - 8, PROMPT_TEXT_Y, 2, 2)
         end
         if self.poster then
             self.poster.draw()

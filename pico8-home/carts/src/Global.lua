@@ -39,13 +39,16 @@ POSTER_BOT_DISPLAY_POS = 118
 POSTER_NEW_DISPLAY_POS = -30
 POSTER_PRINT_SPEED = 4
 POSTER_FLOAT_SPEED = 12
-POSTER_WIDTH = 84
+POSTER_WIDTH = 74
+
+PROMPT_TEXT_Y = 32
 
 SOUND_BUZZ = 0
 SOUND_MEOW = 1
 
-TEXT_HEIGHT = 6
 TRAIT_SPACING = 1
+TEXT_LINE_HEIGHT = 7
+
 
 FUR_COLOR = 1
 EYE_COLOR = 2
@@ -53,9 +56,13 @@ FUR_PATTERN = 3
 EAR_COLOR = 4
 COLLAR = 5
 
+POSTER_ICON = 40
+CAT_ICON = 8
+CLOCK_ICON = 10
 MATCH_ICON = 12
 BAD_MATCH_ICON = 14
 QUESTION_ICON = 44
+
 
 MAX_POSTER_CONFIG_ATTEMPTS = 50
 
@@ -141,7 +148,7 @@ function printCentered(text, x, y, color)
             local textLength = #line - 2  -- exclude control characters
             local totalWidth = textLength * 7
             local startX = x - totalWidth / 2
-            local lineY = y + (8 * (i - 1))
+            local lineY = y + (TEXT_LINE_HEIGHT * (i - 1))
             
             -- Print each character individually
             for j = 3, #line do  -- start after the control characters
@@ -153,19 +160,10 @@ function printCentered(text, x, y, color)
             -- Normal text: 4 pixels per character
             local w = #line * 4
             local lineX = x - w / 2
-            local lineY = y + (8 * (i - 1))
+            local lineY = y + (TEXT_LINE_HEIGHT * (i - 1))
             print(line, lineX, lineY, color or WHITE)
         end
     end
-end
-
-
-function print_center_top(text, line, y_margin, color, base_y)
-    local w = #text * 8
-    local x = (128 - w) / 2
-    local y = (base_y or 0) + ((line - 1) * TEXT_HEIGHT) + (y_margin or 0)
-    local wide_text = "\^w"..text    
-    print(wide_text, x, y, color or 1, true)
 end
 
 function pickUniqueIntegers(count, minValue, maxValue)

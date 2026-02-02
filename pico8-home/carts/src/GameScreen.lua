@@ -3,20 +3,22 @@ GameScreen.new = function(weekday)
     local self = {}
 
     -- states
-    local PICKING = 0
-    local PICKING_DONE = 1
-    local CHECKING = 2
-    local CHECKING_DONE = 3
+    local START = 0
+    local PICKING = 1
+    local PICKING_DONE = 2
+    local CHECKING = 3
+    local CHECKING_DONE = 4
 
     local MESSAGE_DELAY = 120
 
-    self.state = PICKING
-    self.messageTimer = 0
-    self.message = "lost cat!"
+    self.state = START
     self.centerMessage = nil
     self.scrollPos = 0
     self.targetPos = 1
     self.canPress = false
+    self.showStatusIcons = false
+    self.showCats = false
+    self.showPoster = false
     self.secondsRemaining = 60.0
     self._last_time = time()
 
@@ -27,107 +29,126 @@ GameScreen.new = function(weekday)
         cls(PEACH) -- offwhite background
 
         -- draw poster at the top
-        if #self.posters > 0 then
-            self.posters[1].draw()
-        end
-
-        -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
-        palt(BLACK, false) -- black is black, beige is transparent
-
-        -- left icon and catsRemaining beneath
-        local left_x = CLOCK_MARGIN
-        local left_y = CLOCK_MARGIN
-        spr(8, left_x, left_y, 2, 2)
-        local cats = flr(#self.posters)
-        local cats_s = tostr(cats)
-        local cats_w = #cats_s * 4
-        local cats_tx = (left_x + 8) - (cats_w / 2)
-        local cats_ty = left_y + 16 + 2
-        print(cats_s, cats_tx, cats_ty, DARK_BLUE)
-
-        -- clock (upper-right) and secondsRemaining beneath
-        local clock_x = 128 - 16 - CLOCK_MARGIN
-        local clock_y = CLOCK_MARGIN
-        spr(10, clock_x, clock_y, 2, 2)
-        local secs = flr(self.secondsRemaining)
-        local s = tostr(secs)
-        local txt_w = #s * 4
-        local tx = (clock_x + 8) - (txt_w / 2)
-        local ty = clock_y + 16 + 2
-        print(s, tx, ty, DARK_BLUE)
-        palt()
-
-
-        -- draw the visible cats
-        local base_index = flr(self.scrollPos)
-        for j = -1, 1 do
-            local catIndex = base_index + j
-            if catIndex > 0 and catIndex <= #self.catList then
-                self.catList[catIndex].draw()
+        if self.showPoster then
+            if #self.posters > 0 then
+                self.posters[1].draw()
             end
         end
-        
+
+        if self.showStatusIcons then
+            -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
+            palt(BLACK, false) -- black is black, beige is transparent
+            -- left icon and catsRemaining beneath
+            local left_x = CLOCK_MARGIN
+            local left_y = CLOCK_MARGIN
+            spr(POSTER_ICON, left_x, left_y, 2, 2)
+            local cats = flr(#self.posters)
+            local cats_s = tostr(cats)
+            local cats_w = #cats_s * 4
+            local cats_tx = (left_x + 8) - (cats_w / 2)
+            local cats_ty = left_y + 16 + 2
+            print(cats_s, cats_tx, cats_ty, DARK_BLUE)
+            -- clock (upper-right) and secondsRemaining beneath
+            local clock_x = 128 - 16 - CLOCK_MARGIN
+            local clock_y = CLOCK_MARGIN
+            spr(CLOCK_ICON, clock_x, clock_y, 2, 2)
+            local secs = flr(self.secondsRemaining)
+            local s = tostr(secs)
+            local txt_w = #s * 4
+            local tx = (clock_x + 8) - (txt_w / 2)
+            local ty = clock_y + 16 + 2
+            print(s, tx, ty, DARK_BLUE)
+            palt()
+        end
+
+        -- draw the visible cats
+        if self.showCats then
+            local base_index = flr(self.scrollPos)
+            for j = -1, 1 do
+                local catIndex = base_index + j
+                if catIndex > 0 and catIndex <= #self.catList then
+                    self.catList[catIndex].draw()
+                end
+            end
+        end
+
         -- draw center message if present
         if self.centerMessage then
-            printCentered(self.centerMessage, SCREEN_WIDTH/2, 44, DARK_BLUE)
+            printCentered(self.centerMessage, SCREEN_WIDTH/2, PROMPT_TEXT_Y, DARK_BLUE)
         end
     end
 
     function self.update()
-        self.messageTimer -= 1
-        if self.state == PICKING then
+        if self.state == START then
+            self.update_start()
+        elseif self.state == PICKING then
             self.update_picking()
             if  #self.posters < 1 then
                 self.state = PICKING_DONE
             elseif self.secondsRemaining <= 0 then
                 self.state = PICKING_DONE                
-                self.message = "times up!"
-                self.messageTimer = MESSAGE_DELAY                
             end
         elseif self.state == PICKING_DONE then
-            self.messageTimer -= 1
-            if self.messageTimer <= 0 then
-                self.state = CHECKING
-                self.messageTimer = 0
-                self.message = "let's check!"
-                self.targetPos = 1
-            end
+            self.state = CHECKING
+            self.targetPos = 1
         elseif self.state == CHECKING then
             self.update_checking()
         end
 
         -- update animations - we want to do these in all modes
 
-        -- adjust scrollPos to 'catch up' with targetPos
-        local diff = self.targetPos - self.scrollPos
-        local dist = abs(diff)
-        if dist > 0 then
-            local step = dist * 0.2
-            if step < 0.1 then step = 0.1 end
-            if step >= dist then
-                self.scrollPos = self.targetPos
-            else
-                self.scrollPos = self.scrollPos + sgn(diff) * step
+        if self.showPoster then
+            if #self.posters > 0 then
+                self.posters[1].update()
             end
         end
 
-        -- update poster animation
-        if #self.posters > 0 then
-            self.posters[1].update()
-        end
-
-        -- update the x position of the visible cats
-        local base_index = flr(self.scrollPos)
-        local frac = self.scrollPos - base_index
-        local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
-
-        for j = -1, 1 do
-            local catIndex = base_index + j
-            if catIndex > 0 and catIndex <= #self.catList then
-                -- position each slot, then shift by fractional progress toward next slot
-                self.catList[catIndex].x = SCREEN_WIDTH/2 + (j * spacing) - (frac * spacing)
-                self.catList[catIndex].update()
+        if self.showCats then
+            -- adjust scrollPos to 'catch up' with targetPos            
+            local diff = self.targetPos - self.scrollPos
+            local dist = abs(diff)
+            if dist > 0 then
+                local step = dist * 0.2
+                if step < 0.1 then step = 0.1 end
+                if step >= dist then
+                    self.scrollPos = self.targetPos
+                else
+                    self.scrollPos = self.scrollPos + sgn(diff) * step
+                end
             end
+
+            -- update the x position of the visible cats
+            local base_index = flr(self.scrollPos)
+            local frac = self.scrollPos - base_index
+            local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
+
+            for j = -1, 1 do
+                local catIndex = base_index + j
+                if catIndex > 0 and catIndex <= #self.catList then
+                    -- position each slot, then shift by fractional progress toward next slot
+                    self.catList[catIndex].x = SCREEN_WIDTH/2 + (j * spacing) - (frac * spacing)
+                    self.catList[catIndex].update()
+                end
+            end
+        end
+    end
+
+    function self.update_start()
+        if not self.startCoroutine then
+            self.startCoroutine = cocreate(function()
+                self.showCats = false
+                self.showPoster = false                
+                self.showStatusIcons = true
+                self.centerMessage = "\^w"..weekday.name.."\n\n\nready?\npress ❎ to start"
+                while not btn(BUTTON_X) do 
+                    yield()
+                end
+                self.state = PICKING
+                self.startCoroutine = nil
+            end)
+        end
+        if self.startCoroutine then
+            coresume(self.startCoroutine)
         end
     end
 
@@ -203,14 +224,16 @@ GameScreen.new = function(weekday)
         else
             self.canPress = true
         end
-        if (self.targetPos == self.scrollPos) then
-            local selectedCat = self.catList[self.targetPos]
-            if self.posters[1] then
-                local pronoun = self.posters[1].isFemale and "hER" or "hIM"
-                self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     \n \131: tHIS iS "..pronoun.."! "
+        
+        if self.posters[1] then
+            local pronoun = self.posters[1].isFemale and "hER" or "hIM"
+            self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
+            if self.targetPos == self.scrollPos then
+                local selectedCat = self.catList[self.targetPos]
+                if selectedCat and not selectedCat.poster then
+                    self.centerMessage = self.centerMessage.."\n \131: tHIS iS "..pronoun.."! "
+                end
             end
-        else 
-            self.centerMessage = nil
         end
     end
 
@@ -218,6 +241,7 @@ GameScreen.new = function(weekday)
         if not self.checkingCoroutine then
             self.checkingCoroutine = cocreate(function()
                 local correct = 0
+                self.showStatusIcons = false
 
                 self.centerMessage = "dONE.  lET'S cHECK!"
                 for j = 2, 1 * TICKS_PER_SECOND do  
@@ -238,8 +262,6 @@ GameScreen.new = function(weekday)
                         end
                         cat.adornmentSpriteId = QUESTION_ICON
 
-                        local pronoun = cat.poster.isFemale and "her" or "him"
-                        self.message = "is this "..pronoun.."?"
                         for j = 1, .5 * TICKS_PER_SECOND do 
                             yield() 
                         end

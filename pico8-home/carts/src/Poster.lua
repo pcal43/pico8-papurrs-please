@@ -35,7 +35,7 @@ Poster.new = function(name, isFemale, traits)
     end
 
     function self.draw()
-        local posterHeight = 2 + TEXT_HEIGHT + (2 * TRAIT_SPACING) + (self.traitCount * (TEXT_HEIGHT + TRAIT_SPACING)) + 2
+        local posterHeight = 2 + TEXT_LINE_HEIGHT + (2 * TRAIT_SPACING) + (self.traitCount * (TEXT_LINE_HEIGHT + TRAIT_SPACING)) + 2
 
         local rx = self.x - POSTER_WIDTH / 2
         rectfill(rx, self.y, rx + POSTER_WIDTH - 1, self.y + posterHeight, WHITE) -- white
