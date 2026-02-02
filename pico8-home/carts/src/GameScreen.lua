@@ -208,9 +208,11 @@ GameScreen.new = function(weekday)
                         while cat.poster.y > cat.poster.targetY do   -- wait for it to get there
                             yield()
                         end
+                        cat.adornmentSpriteId = QUESTION_ICON
+
                         local pronoun = cat.poster.isFemale and "her" or "him"
                         self.message = "is this "..pronoun.."?"
-                        for j = 1, 1 * TICKS_PER_SECOND do 
+                        for j = 1, .5 * TICKS_PER_SECOND do 
                             yield() 
                         end
                         if cat.poster.isMatch(cat.traits) then
@@ -219,6 +221,9 @@ GameScreen.new = function(weekday)
                         else
                             cat.adornmentSpriteId = BAD_MATCH_ICON
                             sfx(SOUND_BUZZ)
+                        end
+                        for j = 1, .5 * TICKS_PER_SECOND do 
+                            yield() 
                         end
                     end
                 end
