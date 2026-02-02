@@ -195,30 +195,42 @@ GameScreen.new = function(weekday)
     end
 
     function self.update_checking()
-        if self.scrollPos == self.targetPos then -- dont do anything yet if we're still scrolling to the next cat
-            local cat = self.catList[self.scrollPos]
-            local poster = cat.poster
-            if poster then
-                if poster.targetY > POSTER_TOP_DISPLAY_POS then
-                    -- the first time we see the it, its poster will be at the bottom.  start moving it up
-                    poster.targetY = POSTER_TOP_DISPLAY_POS
-                elseif poster.y <= poster.targetY then
-                    -- otherwise, we wait for it to move to the target.  when it gets there...
-                    local pronoun = poster.isFemale and "her" or "him"
-                    self.message = "is this "..pronoun.."?"
-                    if poster.isMatch(cat.traits) then
-                        cat.adornmentSpriteId = MATCH_ICON
-                    else 
-                        cat.adornmentSpriteId = BAD_MATCH_ICON
+        if not self.checkingCoroutine then
+            self.checkingCoroutine = cocreate(function()
+                for i = 1, #self.catList do
+                    self.targetPos = i
+                    while self.scrollPos != self.targetPos do -- wait for scrolling to finish
+                        yield()
                     end
-                    if self.targetPos < #self.catList then
-                        self.targetPos += 1
-                    else
-                        self.state = CHECKING_DONE
+                    local cat = self.catList[i]
+                    if cat.poster then
+                        cat.poster.targetY = POSTER_TOP_DISPLAY_POS  -- move the poster up
+                        while cat.poster.y > cat.poster.targetY do   -- wait for it to get there
+                            yield()
+                        end
+                        local pronoun = cat.poster.isFemale and "her" or "him"
+                        self.message = "is this "..pronoun.."?"
+                        for j = 1, 1 * TICKS_PER_SECOND do 
+                            yield() 
+                        end
+                        if cat.poster.isMatch(cat.traits) then
+                            cat.adornmentSpriteId = MATCH_ICON
+                            sfx(SOUND_MEOW)
+                        else
+                            cat.adornmentSpriteId = BAD_MATCH_ICON
+                            sfx(SOUND_BUZZ)
+                        end
                     end
                 end
-            else
-            end
+                for j = 1, 1 * TICKS_PER_SECOND do 
+                    yield() 
+                end
+                self.state = CHECKING_DONE
+                self.checkingCoroutine = nil
+            end)
+        end
+        if self.checkingCoroutine then
+            coresume(self.checkingCoroutine)
         end
     end
 
