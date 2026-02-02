@@ -31,14 +31,6 @@ GameScreen.new = function(weekday)
             self.posters[1].draw()
         end
 
-        local header_h = 9
-        local header_w = 84
-        local header_x = (128 - header_w) / 2
-        local header_y = 0
-        rectfill(header_x - 1, header_y, header_x + 1 + header_w - 1, header_y + header_h, BLACK)
-        print_center_top(self.message, 0, 5, YELLOW, 2) -- yellow text
-
-
         -- draw icons: left (sprite 8) with catsRemaining, and clock (sprite 10) right with seconds
         palt(BLACK, false) -- black is black, beige is transparent
 
