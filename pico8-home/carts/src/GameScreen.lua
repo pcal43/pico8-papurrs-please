@@ -87,8 +87,6 @@ GameScreen.new = function(weekday)
             self.update_picking()
             if  #self.posters < 1 then
                 self.state = PICKING_DONE
-                self.message = "picking done!"
-                self.messageTimer = MESSAGE_DELAY               
             elseif self.secondsRemaining <= 0 then
                 self.state = PICKING_DONE                
                 self.message = "times up!"
@@ -170,8 +168,21 @@ GameScreen.new = function(weekday)
                 self.canPress = false
             end
         elseif btn(BUTTON_UP) then
-            -- cycle to the next poster
-
+            if self.canPress then
+                -- cycle to the next poster
+                if #self.posters > 1 then
+                    -- Animate current poster up off screen
+                    self.posters[1].targetY = POSTER_NEW_DISPLAY_POS - 20
+                    -- Move it to the back of the queue
+                    local currentPoster = self.posters[1]
+                    del(self.posters, currentPoster)
+                    add(self.posters, currentPoster)
+                    -- Animate the next poster down
+                    self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                    self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                end
+                self.canPress = false
+            end
         elseif btn(BUTTON_DOWN) then
             if self.canPress then
                 -- If they press the action button, that means they think
@@ -179,7 +190,6 @@ GameScreen.new = function(weekday)
                 -- current poster.  Check if the cat has a poster; if it does not, 
                 -- Pop the current poster ([1]) off self.posters and assign it
                 -- to the cat that is in the middle of the screen
-                
                 local selectedCat = self.catList[self.targetPos]
                 if selectedCat and not selectedCat.poster and #self.posters > 0 then
                     -- Assign the poster to the cat
@@ -203,8 +213,10 @@ GameScreen.new = function(weekday)
         end
         if (self.targetPos == self.scrollPos) then
             local selectedCat = self.catList[self.targetPos]
-            local pronoun = self.posters[1].isFemale and "hER" or "hIM"
-            self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     \n \131: tHIS iS "..pronoun.."! "
+            if self.posters[1] then
+                local pronoun = self.posters[1].isFemale and "hER" or "hIM"
+                self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     \n \131: tHIS iS "..pronoun.."! "
+            end
         else 
             self.centerMessage = nil
         end
@@ -214,6 +226,13 @@ GameScreen.new = function(weekday)
         if not self.checkingCoroutine then
             self.checkingCoroutine = cocreate(function()
                 local correct = 0
+
+                self.centerMessage = "dONE.  lET'S cHECK!"
+                for j = 2, 1 * TICKS_PER_SECOND do  
+                    yield() 
+                end
+                self.centerMessage = nil
+
                 for i = 1, #self.catList do
                     self.targetPos = i
                     while self.scrollPos != self.targetPos do -- wait for scrolling to finish
