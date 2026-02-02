@@ -2,16 +2,6 @@ local GameScreen = {}
 GameScreen.new = function(weekday)
     local self = {}
 
-    -- states
-    local START = 0
-    local PICKING = 1
-    local PICKING_DONE = 2
-    local CHECKING = 3
-    local CHECKING_DONE = 4
-
-    local MESSAGE_DELAY = 120
-
-    self.state = START
     self.centerMessage = nil
     self.scrollPos = 0
     self.targetPos = 1
@@ -79,24 +69,11 @@ GameScreen.new = function(weekday)
     end
 
     function self.update()
-        if self.state == START then
-            self.update_start()
-        elseif self.state == PICKING then
-            self.update_picking()
-            if  #self.posters < 1 then
-                self.state = PICKING_DONE
-            elseif self.secondsRemaining <= 0 then
-                self.state = PICKING_DONE                
-            end
-        elseif self.state == PICKING_DONE then
-            self.state = CHECKING
-            self.targetPos = 1
-        elseif self.state == CHECKING then
-            self.update_checking()
+        if self.coroutine then
+            coresume(self.coroutine)
         end
 
         -- update animations - we want to do these in all modes
-
         if self.showPoster then
             if #self.posters > 0 then
                 self.posters[1].update()
@@ -116,12 +93,10 @@ GameScreen.new = function(weekday)
                     self.scrollPos = self.scrollPos + sgn(diff) * step
                 end
             end
-
             -- update the x position of the visible cats
             local base_index = flr(self.scrollPos)
             local frac = self.scrollPos - base_index
             local spacing = CAT_WIDTH + SPACE_BETWEEN_CATS
-
             for j = -1, 1 do
                 local catIndex = base_index + j
                 if catIndex > 0 and catIndex <= #self.catList then
@@ -133,191 +108,196 @@ GameScreen.new = function(weekday)
         end
     end
 
-    function self.update_start()
-        if not self.startCoroutine then
-            self.startCoroutine = cocreate(function()
-                self.showCats = false
-                self.showPoster = false                
-                self.showStatusIcons = true
-                self.centerMessage = "\^w"..weekday.name.."\n\n\nready?\npress ❎ to start"
-                while not btn(BUTTON_X) do 
-                    yield()
-                end
-                self.state = PICKING
-                self.startCoroutine = nil
-            end)
-        end
-        if self.startCoroutine then
-            coresume(self.startCoroutine)
-        end
+    function self.startDay()
+        self.coroutine = cocreate(function()
+            self.showCats = false
+            self.showPoster = false                
+            self.showStatusIcons = true
+            self.centerMessage = "\^w"..weekday.name.."\n\n\nready?\npress ❎ to start"
+            while btn(BUTTON_X) do  -- make sure they release the button
+                yield()
+            end
+            while not btn(BUTTON_X) do 
+                yield()
+            end
+            self.startPicking()
+
+        end)
+        printh("created coroutine!!!!")
     end
 
-    function self.update_picking()
-        -- update countdown
-        local now = time()
-        local dt = now - (self._last_time or now)
-        self._last_time = now
-        if dt > 0 then
-            if self.secondsRemaining > dt then
-                self.secondsRemaining = self.secondsRemaining - dt
-            else
-                self.secondsRemaining = 0
-            end
-        end
+    function self.startPicking()
+        self.showCats = true
+        self.showPoster = true
+        self.showStatusIcons = true
+        self.coroutine = cocreate(function()
+            while true do
+                if self.posters and #self.posters < 1 then
+                    self.startChecking()
+                    return
+                end
 
-        -- discrete taps: left decrements, right increments
-        if btn(BUTTON_LEFT) then
-            if self.canPress then
-                if self.targetPos > 1 then
-                    self.targetPos = self.targetPos - 1
-                end
-                self.canPress = false
-            end
-        elseif btn(BUTTON_RIGHT) then
-            if self.canPress then
-                if self.targetPos < #self.catList then
-                    self.targetPos = self.targetPos + 1
-                end
-                self.canPress = false
-            end
-        elseif btn(BUTTON_UP) then
-            if self.canPress then
-                -- cycle to the next poster
-                if #self.posters > 1 then
-                    -- Animate current poster up off screen
-                    self.posters[1].targetY = POSTER_NEW_DISPLAY_POS - 20
-                    -- Move it to the back of the queue
-                    local currentPoster = self.posters[1]
-                    del(self.posters, currentPoster)
-                    add(self.posters, currentPoster)
-                    -- Animate the next poster down
-                    self.posters[1].y = POSTER_NEW_DISPLAY_POS
-                    self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
-                end
-                self.canPress = false
-            end
-        elseif btn(BUTTON_DOWN) then
-            if self.canPress then
-                -- If they press the action button, that means they think
-                -- the currently-selected cat is the lost cat described in the 
-                -- current poster.  Check if the cat has a poster; if it does not, 
-                -- Pop the current poster ([1]) off self.posters and assign it
-                -- to the cat that is in the middle of the screen
-                local selectedCat = self.catList[self.targetPos]
-                if selectedCat and not selectedCat.poster and #self.posters > 0 then
-                    -- Assign the poster to the cat
-                    selectedCat.poster = self.posters[1]
-                    selectedCat.poster.speed = POSTER_FLOAT_SPEED
-                    selectedCat.poster.targetY = POSTER_BOT_DISPLAY_POS
-                    
-                    -- Remove the poster from the list
-                    del(self.posters, self.posters[1])
-                    
-                    -- Animate the next poster moving down
-                    if #self.posters > 0 then
-                        self.posters[1].y = POSTER_NEW_DISPLAY_POS
-                        self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                -- update countdown
+                local now = time()
+                local dt = now - (self._last_time or now)
+                self._last_time = now
+                if dt > 0 then
+                    if self.secondsRemaining > dt then
+                        self.secondsRemaining = self.secondsRemaining - dt
+                    else
+                        self.secondsRemaining = 0
                     end
                 end
-                self.canPress = false
-            end
-        else
-            self.canPress = true
-        end
-        
-        if self.posters[1] then
-            local pronoun = self.posters[1].isFemale and "hER" or "hIM"
-            self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
-            if self.targetPos == self.scrollPos then
-                local selectedCat = self.catList[self.targetPos]
-                if selectedCat and not selectedCat.poster then
-                    self.centerMessage = self.centerMessage.."\n \131: tHIS iS "..pronoun.."! "
+
+                -- discrete taps: left decrements, right increments
+                if btn(BUTTON_LEFT) then
+                    if self.canPress then
+                        if self.targetPos > 1 then
+                            self.targetPos = self.targetPos - 1
+                        end
+                        self.canPress = false
+                    end
+                elseif btn(BUTTON_RIGHT) then
+                    if self.canPress then
+                        if self.targetPos < #self.catList then
+                            self.targetPos = self.targetPos + 1
+                        end
+                        self.canPress = false
+                    end
+                elseif btn(BUTTON_UP) then
+                    if self.canPress then
+                        -- cycle to the next poster
+                        if #self.posters > 1 then
+                            -- Animate current poster up off screen
+                            self.posters[1].targetY = POSTER_NEW_DISPLAY_POS - 20
+                            -- Move it to the back of the queue
+                            local currentPoster = self.posters[1]
+                            del(self.posters, currentPoster)
+                            add(self.posters, currentPoster)
+                            -- Animate the next poster down
+                            self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                            self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                        end
+                        self.canPress = false
+                    end
+                elseif btn(BUTTON_DOWN) then
+                    if self.canPress then
+                        -- If they press the action button, that means they think
+                        -- the currently-selected cat is the lost cat described in the 
+                        -- current poster.  Check if the cat has a poster; if it does not, 
+                        -- Pop the current poster ([1]) off self.posters and assign it
+                        -- to the cat that is in the middle of the screen
+                        local selectedCat = self.catList[self.targetPos]
+                        if selectedCat and not selectedCat.poster and #self.posters > 0 then
+                            -- Assign the poster to the cat
+                            selectedCat.poster = self.posters[1]
+                            selectedCat.poster.speed = POSTER_FLOAT_SPEED
+                            selectedCat.poster.targetY = POSTER_BOT_DISPLAY_POS
+                            
+                            -- Remove the poster from the list
+                            del(self.posters, self.posters[1])
+                            
+                            -- Animate the next poster moving down
+                            if #self.posters > 0 then
+                                self.posters[1].y = POSTER_NEW_DISPLAY_POS
+                                self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                            end
+                        end
+                        self.canPress = false
+                    end
+                else
+                    self.canPress = true
                 end
+                if self.posters[1] then
+                    local pronoun = self.posters[1].isFemale and "hER" or "hIM"
+                    self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
+                    if self.targetPos == self.scrollPos then
+                        local selectedCat = self.catList[self.targetPos]
+                        if selectedCat and not selectedCat.poster then
+                            self.centerMessage = self.centerMessage.."\n \131: tHIS iS "..pronoun.."! "
+                        end
+                    end
+                end
+            yield()
+
             end
-        end
+        end)
     end
 
-    function self.update_checking()
-        if not self.checkingCoroutine then
-            self.checkingCoroutine = cocreate(function()
-                local correct = 0
-                self.showStatusIcons = false
+    function self.startChecking()
+        self.coroutine = cocreate(function()
+            local correct = 0
+            self.showStatusIcons = false
 
-                self.centerMessage = "dONE.  lET'S cHECK!"
-                for j = 2, 1 * TICKS_PER_SECOND do  
-                    yield() 
+            self.centerMessage = "dONE.  lET'S cHECK!"
+            for j = 2, 1 * TICKS_PER_SECOND do  
+                yield() 
+            end
+            self.centerMessage = nil
+
+            for i = 1, #self.catList do
+                self.targetPos = i
+                while self.scrollPos != self.targetPos do -- wait for scrolling to finish
+                    yield()
                 end
-                self.centerMessage = nil
-
-                for i = 1, #self.catList do
-                    self.targetPos = i
-                    while self.scrollPos != self.targetPos do -- wait for scrolling to finish
+                local cat = self.catList[i]
+                if cat.poster then
+                    cat.poster.targetY = POSTER_TOP_DISPLAY_POS  -- move the poster up
+                    while cat.poster.y > cat.poster.targetY do   -- wait for it to get there
                         yield()
                     end
-                    local cat = self.catList[i]
-                    if cat.poster then
-                        cat.poster.targetY = POSTER_TOP_DISPLAY_POS  -- move the poster up
-                        while cat.poster.y > cat.poster.targetY do   -- wait for it to get there
-                            yield()
-                        end
-                        cat.adornmentSpriteId = QUESTION_ICON
+                    cat.adornmentSpriteId = QUESTION_ICON
 
-                        for j = 1, .5 * TICKS_PER_SECOND do 
-                            yield() 
-                        end
-                        if cat.poster.isMatch(cat.traits) then
-                            cat.adornmentSpriteId = MATCH_ICON
-                            correct += 1
-                            sfx(SOUND_MEOW)
-                        else
-                            cat.adornmentSpriteId = BAD_MATCH_ICON
-                            sfx(SOUND_BUZZ)
-                        end
-                        for j = 1, .5 * TICKS_PER_SECOND do 
-                            yield() 
-                        end
+                    for j = 1, .5 * TICKS_PER_SECOND do 
+                        yield() 
+                    end
+                    if cat.poster.isMatch(cat.traits) then
+                        cat.adornmentSpriteId = MATCH_ICON
+                        correct += 1
+                        sfx(SOUND_MEOW)
+                    else
+                        cat.adornmentSpriteId = BAD_MATCH_ICON
+                        sfx(SOUND_BUZZ)
+                    end
+                    for j = 1, .5 * TICKS_PER_SECOND do 
+                        yield() 
                     end
                 end
-                for j = 1, 1 * TICKS_PER_SECOND do 
-                    yield() 
-                end
-                -- scroll cats off screen and wait for scrolling to finish
-                self.targetPos = #self.catList + 2
-                while self.scrollPos != self.targetPos do
-                    yield()
-                end
-                -- display score summary
-                self.message = ""
-                local scoreMessage = "\^wlost cats: "..#self.catList.."\n\^w    found: "..correct
-                if correct == #self.catList then
-                    scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
-                end
-                self.centerMessage = scoreMessage
-                -- wait before showing continue prompt
-                for j = 1, 1 * TICKS_PER_SECOND do  
-                    yield() 
-                end
-                -- wait for button press
-                self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
-                while not btn(4) do 
-                    yield()
-                end
-
-
-
-                self.state = CHECKING_DONE
-                self.checkingCoroutine = nil
-            end)
-        end
-        if self.checkingCoroutine then
-            coresume(self.checkingCoroutine)
-        end
+            end
+            for j = 1, 1 * TICKS_PER_SECOND do 
+                yield() 
+            end
+            -- scroll cats off screen and wait for scrolling to finish
+            self.targetPos = #self.catList + 2
+            while self.scrollPos != self.targetPos do
+                yield()
+            end
+            -- display score summary
+            self.message = ""
+            local scoreMessage = "\^wlost cats: "..#self.catList.."\n\^w    found: "..correct
+            if correct == #self.catList then
+                scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
+            end
+            self.centerMessage = scoreMessage
+            -- wait before showing continue prompt
+            for j = 1, 1 * TICKS_PER_SECOND do  
+                yield() 
+            end
+            -- wait for button press
+            self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
+            while not btn(4) do 
+                yield()
+            end
+            self.coroutine = nil
+        end)
     end
 
 
     function self.isDone()
-        return self.state == CHECKING_DONE
+        return self.coroutine == nil
     end
+
+    self.startDay()
 
     return self
 end
@@ -343,7 +323,6 @@ end
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
 function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
-    printh("!!")
 --    requireArray(posterTraitKeys)
     --requireNonNil(count)
     --requireNonNil(minTraits)
