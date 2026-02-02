@@ -238,30 +238,25 @@ GameScreen.new = function(weekday)
                 for j = 1, 1 * TICKS_PER_SECOND do 
                     yield() 
                 end
-                self.scrollPos = #self.catList + 2
-                while self.scrollPos != self.targetPos do -- wait for scrolling to finish
+                -- scroll cats off screen and wait for scrolling to finish
+                self.scrollPos = #self.catList + 20
+                while self.scrollPos != self.targetPos do
                     yield()
                 end
-                -- Show score summary
+                -- display score summary
                 self.message = ""
-                
                 local scoreMessage = "\^wlost cats: "..#self.catList.."\n\^w    found: "..correct
-                
                 if correct == #self.catList then
                     scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
                 end
-                
                 self.centerMessage = scoreMessage
-                
-                -- Wait before showing continue prompt
-                for j = 1, 1 * TICKS_PER_SECOND do 
+                -- wait before showing continue prompt
+                for j = 1, 1 * TICKS_PER_SECOND do  
                     yield() 
                 end
-                
+                -- wait for button press
                 self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
-                
-                -- Wait for button press
-                while not btn(4) do
+                while not btn(4) do 
                     yield()
                 end
 
