@@ -239,7 +239,7 @@ GameScreen.new = function(weekday)
                     yield() 
                 end
                 -- scroll cats off screen and wait for scrolling to finish
-                self.scrollPos = #self.catList + 20
+                self.targetPos = #self.catList + 2
                 while self.scrollPos != self.targetPos do
                     yield()
                 end

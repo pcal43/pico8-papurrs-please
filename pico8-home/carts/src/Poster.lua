@@ -17,7 +17,7 @@ Poster.new = function(name, isFemale, traits)
         if not first then
             self.traitText = self.traitText.."\n"
         end
-        self.traitText = self.traitText.."\^w"..trait_value.name
+        self.traitText = self.traitText..trait_value.name
         first = false
     end
 
