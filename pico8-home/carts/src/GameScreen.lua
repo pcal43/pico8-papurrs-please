@@ -77,7 +77,7 @@ GameScreen.new = function(weekday)
         
         -- draw center message if present
         if self.centerMessage then
-            printCentered(self.centerMessage, SCREEN_WIDTH/2, 48, DARK_BLUE)
+            printCentered(self.centerMessage, SCREEN_WIDTH/2, 44, DARK_BLUE)
         end
     end
 
@@ -155,21 +155,24 @@ GameScreen.new = function(weekday)
         end
 
         -- discrete taps: left decrements, right increments
-        if btn(0) then
+        if btn(BUTTON_LEFT) then
             if self.canPress then
                 if self.targetPos > 1 then
                     self.targetPos = self.targetPos - 1
                 end
                 self.canPress = false
             end
-        elseif btn(1) then
+        elseif btn(BUTTON_RIGHT) then
             if self.canPress then
                 if self.targetPos < #self.catList then
                     self.targetPos = self.targetPos + 1
                 end
                 self.canPress = false
             end
-        elseif btn(4) then
+        elseif btn(BUTTON_UP) then
+            -- cycle to the next poster
+
+        elseif btn(BUTTON_DOWN) then
             if self.canPress then
                 -- If they press the action button, that means they think
                 -- the currently-selected cat is the lost cat described in the 
@@ -197,6 +200,13 @@ GameScreen.new = function(weekday)
             end
         else
             self.canPress = true
+        end
+        if (self.targetPos == self.scrollPos) then
+            local selectedCat = self.catList[self.targetPos]
+            local pronoun = self.posters[1].isFemale and "hER" or "hIM"
+            self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     \n \131: tHIS iS "..pronoun.."! "
+        else 
+            self.centerMessage = nil
         end
     end
 
