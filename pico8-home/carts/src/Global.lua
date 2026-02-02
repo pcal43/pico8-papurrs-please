@@ -134,20 +134,28 @@ function printCentered(text, x, y, color)
     -- Print each line centered
     for i = 1, #lines do
         local line = lines[i]
-        local charWidth = 4  -- default 4 pixels per character
-        local textLength = #line
         
-        -- Check if line starts with wide text control character (chr(23))
+        -- Check if line starts with wide text control character
         if sub(line, 1, 1) == chr(6) and sub(line, 2, 2) == "w" then
-            charWidth = 8  -- wide characters are 8 pixels
-            textLength = textLength - 2  -- exclude control character from width calculation
+            -- Wide text: print each character separately with 7 pixel spacing
+            local textLength = #line - 2  -- exclude control characters
+            local totalWidth = textLength * 7
+            local startX = x - totalWidth / 2
+            local lineY = y + (8 * (i - 1))
+            
+            -- Print each character individually
+            for j = 3, #line do  -- start after the control characters
+                local ch = "\^w"..sub(line, j, j)
+                local charX = startX + (j - 3) * 7
+                print(ch, charX, lineY, color or WHITE)
+            end
+        else
+            -- Normal text: 4 pixels per character
+            local w = #line * 4
+            local lineX = x - w / 2
+            local lineY = y + (8 * (i - 1))
+            print(line, lineX, lineY, color or WHITE)
         end
-
-        
-        local w = textLength * charWidth
-        local lineX = x - w / 2
-        local lineY = y + (8 * (i - 1))
-        print(line, lineX, lineY, color or WHITE)
     end
 end
 
