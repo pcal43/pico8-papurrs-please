@@ -1,23 +1,28 @@
 
+
+FUR_COLOR = 1
+EYE_COLOR = 2
+COLLAR_COLOR = 3
+STRIPES = 4
+EAR_COLOR = 5
+
 TraitKeys = {
   FUR_COLOR,
   EYE_COLOR,
-  EAR_COLOR,
-  COLLAR_COLOR
+  COLLAR_COLOR,
+  STRIPES,
+  EAR_COLOR,  
 }
 
 TraitValues = {}
 
-TraitValues[FUR_PATTERN] = {
+TraitValues[STRIPES] = {
    {
-     name = "solid color"
+     name = "no stripes"
    },
    {
-     name = "striped"
-   },
-   {
-     name = "calico"
-   },
+     name = "stripes"
+   }
 }
 
 TraitValues[COLLAR_COLOR] = {
@@ -118,6 +123,57 @@ TraitValues[EAR_COLOR] = {
      inner = BLACK
    }
 }
+
+
+
+WEEKDAYS = {
+    {
+        name = "monday",
+        posterCount = 4,
+        catCount = 5,
+        time = 20,
+        catTraits = { [EYE_COLOR] = { 1, 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1 } },
+        posterTraits = { FUR_COLOR },
+        posterTraitCount = 1
+    },
+    {
+        name = "tuesday",
+        posterCount = 6,
+        catCount = 7,
+        time = 30,
+        catTraits = { [COLLAR_COLOR] = { 1, 1, 1, 2 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1, 1, 1, 1, 1, 1, 2 } },
+        posterTraits = { FUR_COLOR, EYE_COLOR },
+        posterTraitCount = 2
+    },
+    {
+        name = "wednesday",
+        posterCount = 8,
+        catCount = 10,
+        time = 45,
+        catTraits = { [STRIPES] = { 1, 1, 1, 2 } },
+        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        posterTraitCount = 3
+    },
+    {
+        name = "thursday",
+        posterCount = 10,
+        catCount = 12,
+        time = 60,
+        catTraits = { },
+        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, STRIPES },
+        posterTraitCount = 3
+    },
+    {
+        name = "friday",
+        posterCount = 12,
+        catCount = 15,
+        time = 90,
+        catTraits = { },
+        posterTraits = { EYE_COLOR, STRIPES, EAR_COLOR },
+        posterTraitCount = 3
+    }
+}
+
 
 
 -- Cat names stored as comma-delimited string to save tokens

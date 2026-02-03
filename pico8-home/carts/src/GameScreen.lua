@@ -12,7 +12,6 @@ GameScreen.new = function()
     self.showStatusIcons = false
     self.showCats = false
     self.showPoster = false
-    self._last_time = time()
     self.coroutine = nil
     self.totalPostersThisWeek = 0
     self.foundCatsThisWeek = 0
@@ -113,7 +112,7 @@ GameScreen.new = function()
 
     function self.startDay()
         local weekday = WEEKDAYS[self.weekdayNumber]
-        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.catTraits, weekday.posterCount, weekday.posterTraitCount, weekday.posterTraits)
+        self.posters, self.catList = generatePostersAndCats(weekday.catCount, weekday.catTraits, weekday.posterCount, weekday.posterTraitCount, weekday.posterTraits)
         self.scrollPos = 0
         self.targetPos = 1
         self.secondsRemaining = weekday.time
@@ -138,8 +137,6 @@ press ❎ to start]]
             while not btn(BUTTON_X) do 
                 yield()
             end
-        printh("XXXXX")
-
             self.startPicking()
         end)
     end
@@ -148,6 +145,7 @@ press ❎ to start]]
         self.showCats = true
         self.showPoster = true
         self.showStatusIcons = true
+        self._last_time = time()
         self.coroutine = cocreate(function()
             while true do
                 if self.posters and #self.posters < 1 then
@@ -290,12 +288,15 @@ press ❎ to start]]
                         cat.adornmentSpriteId = MATCH_ICON
                         correct += 1
                         sfx(SOUND_MEOW)
+                        for j = 1, .5 * TICKS_PER_SECOND do 
+                            yield() 
+                        end
                     else
                         cat.adornmentSpriteId = BAD_MATCH_ICON
                         sfx(SOUND_BUZZ)
-                    end
-                    for j = 1, .5 * TICKS_PER_SECOND do 
-                        yield() 
+                        for j = 1, 2 * TICKS_PER_SECOND do 
+                            yield() 
+                        end
                     end
                 end
             end
@@ -398,7 +399,7 @@ end
 function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCount, posterTraitKeys)
     if catCount < posterCount then
         printh("error: catCount ("..catCount..") < posterCount ("..posterCount..")")
-        return {}, {}
+        catCount = posterCount
     end
     
     printh("generatePosters: "..posterCount.." posters for "..catCount.." cats, "..posterTraitCount.." traits per poster")

@@ -12,8 +12,11 @@ CatTemplate.new = function(spriteId)
         pal(ORANGE, traits[FUR_COLOR].nose)
         pal(BLACK, traits[FUR_COLOR].outline)
 
-        pal(BLUE, traits[FUR_COLOR].stripes) --FIXME
-
+        if traits[STRIPES].name == "stripes" then
+            pal(BLUE, traits[FUR_COLOR].stripes)
+        else
+            pal(BLUE, traits[FUR_COLOR].fur)            
+        end
 
         pal(DARK_GREEN, traits[EYE_COLOR].inner)
         pal(GREEN, traits[EYE_COLOR].outer)
