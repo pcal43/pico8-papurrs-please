@@ -245,8 +245,7 @@ press ❎ to start]]
 
     function self.doTimesUp()
         self.coroutine = cocreate(function()
-            -- Display final score
-            self.centerMessage = "\^wtIMES UP!  lET'S CHECK"
+            self.centerMessage = "\^wtimes up!"
             for j = 1, 3 * TICKS_PER_SECOND do  
                 yield() 
             end
@@ -256,8 +255,7 @@ press ❎ to start]]
 
     function self.doAllChosen()
         self.coroutine = cocreate(function()
-            -- Display final score
-            self.centerMessage = "\^waLL dONE!"
+            self.centerMessage = "\^wall done!"
             for j = 1, 2 * TICKS_PER_SECOND do  
                 yield() 
             end

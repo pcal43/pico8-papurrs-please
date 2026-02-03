@@ -2,7 +2,8 @@
 TraitKeys = {
   FUR_COLOR,
   EYE_COLOR,
-  EAR_COLOR
+  EAR_COLOR,
+  COLLAR_COLOR
 }
 
 TraitValues = {}
@@ -19,7 +20,7 @@ TraitValues[FUR_PATTERN] = {
    },
 }
 
-TraitValues[COLLAR] = {
+TraitValues[COLLAR_COLOR] = {
     {
       name = "no collar",
       color = -1
@@ -31,6 +32,14 @@ TraitValues[COLLAR] = {
     {
       name = "green collar",
       color = DARK_GREEN
+    },
+    {
+      name = "blue collar",
+      color = BLUE
+    },
+    {
+      name = "red collar",
+      color = RED
     }
 }
 
