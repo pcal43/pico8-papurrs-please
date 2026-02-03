@@ -8,6 +8,7 @@ __lua__
 #include src/Traits.lua
 #include src/Poster.lua
 #include src/Cat.lua
+#include src/Generation.lua
 #include src/GameScreen.lua
 #include src/TitleScreen.lua
 #include src/Controller.lua

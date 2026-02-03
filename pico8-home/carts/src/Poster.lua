@@ -56,26 +56,24 @@ Poster.new = function(name, isFemale, traits)
     -- no TraitKey 'x' such that self.traits[x] does not equal traits[x]
     function self.isMatch(traits)
         requireNonNil(traits)
-        printh("=== isMatch checking for "..self.name.." ===")
-        printh("poster has "..mapSize(self.traits).." traits")
+        -- printh("=== isMatch checking for "..self.name.." ===")
+        -- printh("poster has "..mapSize(self.traits).." traits")
         for trait_key, trait_value in pairs(self.traits) do
-            printh("checking trait_key="..trait_key)
-            printh("  poster trait_value.name="..trait_value.name)
+            -- printh("checking trait_key="..trait_key)
+            -- printh("  poster trait_value.name="..trait_value.name)
             local cat_trait = traits[trait_key]
             if cat_trait then
-                printh("  cat trait_value.name="..cat_trait.name)
+                -- printh("  cat trait_value.name="..cat_trait.name)
                 if cat_trait != trait_value then
-                    printh("  MISMATCH!")
+                    -- printh("  MISMATCH!")
                     return false
-                else
-                    printh("  match ok")
                 end
             else
-                printh("  cat has no trait for key "..trait_key)
+                -- printh("  cat has no trait for key "..trait_key)
                 return false
             end
         end
-        printh("all traits matched!")
+        -- printh("all traits matched!")
         return true
     end
 
@@ -86,10 +84,10 @@ end
 
 
 -- Cat names stored as comma-delimited string to save tokens
-CAT_NAMES = "angel,athena,aurora,baby,bambi,bella,callie,candy,charm,cherry,chloe,cinnamon,cleo,clover,cloudfur,cocoa,cookie,daffodil,daisy,diamond,dusty,echo,faith,fawn,fiona,fluffy,ginger,glitter,gracie,gypsy,harley,harmony,hazel,honey,hope,indigo,iris,ivy,jade,jazz,jewel,jinx,jojo,karma,kiki,kitty,kiwi,latte,lavender,licorice,lily,lollipop,lotus,lulu,lucy,luna,maggie,mango,maple,marble,marshmallow,mischief,misty,mittens,mocha,molly,moonlight,mopsy,muffin,mystic,nala,nova,olive,onyx,opal,pandora,pearl,penny,pepper,phoebe,precious,princess,pumpkin,rosie,ruby,scarlett,scout,sophie,sugar,tabby,tilly,violet,willow,zoe,apollo,ash,bailey,bandit,bear,blaze,boo,boots,buddy,butterball,butterscotch,buttons,cappuccino,caramel,casper,chaos,charlie,cheeto,chester,chip,coconut,comet,copper,cricket,cuddles,doodle,duke,ember,espresso,felix,flash,freckles,garfield,george,ghost,gizmo,goose,gravy,hercules,hobbes,jack,jasper,legend,leo,lightning,loki,louie,lucky,marvel,max,mercury,midnight,milo,moose,murphy,nachos,ninja,noodle,nugget,nutmeg,oak,oliver,oreo,oscar,patches,peanut,quincy,rascal,rocky,romeo,rusty,salem,sam,sebastian,shadow,simba,smokey,snickers,snowball,socks,storm,taco,tiger,toby,tucker,waffle,whiskers,whisper,yoshi,zeus,ziggy"
+CAT_NAMES = "angel,athena,aurora,baby,bailey,bambi,bella,callie,candy,charm,cherry,chloe,cinnamon,cleo,clover,cloudfur,cocoa,cookie,daffodil,daisy,diamond,dusty,echo,faith,fawn,fiona,fluffy,ginger,glitter,gracie,gypsy,harley,harmony,hazel,honey,hope,indigo,iris,ivy,jade,jazz,jewel,jinx,jojo,karma,kiki,kitty,kiwi,latte,lavender,licorice,lily,lollipop,lotus,lulu,lucy,luna,maggie,mango,maple,marble,marshmallow,mischief,misty,mittens,mocha,molly,moonlight,mopsy,muffin,mystic,nala,nova,olive,onyx,opal,pandora,pearl,penny,pepper,phoebe,precious,princess,pumpkin,ripley,rosie,ruby,scarlett,scout,sophie,sugar,tabby,tilly,violet,willow,zoe,apollo,ash,bailey,bandit,bear,blaze,boo,boots,buddy,butterball,buttons,cappuccino,caramel,casper,chaos,charlie,cheeto,chester,chip,coconut,comet,copper,cricket,cuddles,doodle,duke,ember,espresso,felix,flash,freckles,garfield,george,ghost,gizmo,goose,gravy,hercules,hobbes,jack,jasper,legend,leo,lightning,loki,louie,lucky,marvel,max,mercury,midnight,milo,moose,murphy,nachos,ninja,noodle,nugget,nutmeg,oak,oliver,oreo,oscar,patches,peanut,quincy,rascal,rocky,romeo,rusty,salem,sam,sebastian,shadow,simba,smokey,snickers,snowball,socks,stormy,taco,tiger,toby,tucker,waffle,whiskers,whisper,yoshi,zeus,ziggy"
 
-CAT_NAME_COUNT = 184
-CAT_NAME_FIRST_MALE = 94
+CAT_NAME_COUNT = 185
+CAT_NAME_FIRST_MALE = 96
 
 function get_cat_name(n) 
   local count = 0
