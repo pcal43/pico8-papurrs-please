@@ -14,7 +14,7 @@ GameScreen.new = function()
     self.showPoster = false
     self._last_time = time()
     self.coroutine = nil
-    self.totalCatsThisWeek = 0
+    self.totalPostersThisWeek = 0
     self.foundCatsThisWeek = 0
     self.isGameOver = false
 
@@ -292,8 +292,9 @@ press ❎ to start]]
                 yield()
             end
             -- display score summary
+            local posterCount = WEEKDAYS[self.weekdayNumber].posters
             self.message = ""
-            local scoreMessage = "\^w"..WEEKDAYS[self.weekdayNumber].name.."\n\nlost cats: "..#self.catList.."\n    found: "..correct
+            local scoreMessage = "\^w"..WEEKDAYS[self.weekdayNumber].name.."\n\nlost cats: "..posterCount.."\n    found: "..correct
             if correct == #self.catList then
                 scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
             end
@@ -309,7 +310,7 @@ press ❎ to start]]
             end
             
             -- Update week totals
-            self.totalCatsThisWeek += #self.catList
+            self.totalPostersThisWeek += posterCount
             self.foundCatsThisWeek += correct
             
 
@@ -329,9 +330,9 @@ press ❎ to start]]
         
         self.coroutine = cocreate(function()
             -- Display final score
-            local scoreMessage = "\^wend of week!\n\ntOTAL lOST cATS tHIS wEEK:\n"..self.totalCatsThisWeek.."\nyOU fOUND:\n"..self.foundCatsThisWeek
+            local scoreMessage = "\^wend of week!\n\ntOTAL lOST cATS tHIS wEEK:\n"..self.totalPostersThisWeek.."\nyOU fOUND:\n"..self.foundCatsThisWeek
             
-            if self.foundCatsThisWeek == self.totalCatsThisWeek then
+            if self.foundCatsThisWeek == self.totalPostersThisWeek then
                 scoreMessage = scoreMessage.."\n\n\^wpURRFECT!"
             end
             self.centerMessage = scoreMessage
@@ -390,10 +391,121 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
     local cats = {}
     local name_indeces = pickUniqueIntegers(catCount, 1, CAT_NAME_COUNT)
     
-    -- Step 1: Generate unique cats with random trait combinations
-    local usedCatCombos = {}
+    -- Step 1: Generate unique posters with random trait combinations
+    local usedPosterCombos = {}
     local attempts = 0
-    local maxAttempts = catCount * 50
+    local maxAttempts = posterCount * 50
+    
+    while #posters < posterCount and attempts < maxAttempts do
+        attempts += 1
+        
+        -- Pick random number of traits and random trait keys
+        local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
+        local availableKeys = {}
+        for i = 1, #posterTraitKeys do
+            add(availableKeys, posterTraitKeys[i])
+        end
+        
+        local selectedKeys = {}
+        for i = 1, numTraits do
+            if #availableKeys > 0 then
+                local idx = flr(rnd(#availableKeys)) + 1
+                add(selectedKeys, availableKeys[idx])
+                del(availableKeys, availableKeys[idx])
+            end
+        end
+        
+        -- Build random poster traits
+        local posterTraits = {}
+        local posterComboKey = ""
+        for i = 1, #selectedKeys do
+            local traitKey = selectedKeys[i]
+            local possibleValues = TraitValues[traitKey]
+            local valueIdx = flr(rnd(#possibleValues)) + 1
+            posterTraits[traitKey] = possibleValues[valueIdx]
+            posterComboKey = posterComboKey..traitKey..":"..valueIdx..","
+        end
+        
+        if not usedPosterCombos[posterComboKey] then
+            usedPosterCombos[posterComboKey] = true
+            local posterIndex = #posters + 1
+            local name = requireNonNil(get_cat_name(name_indeces[posterIndex]), "nil cat name")
+            local poster = Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits)
+            add(posters, poster)
+        end
+    end
+    
+    if #posters < posterCount then
+        printh("warning: only generated "..#posters.." unique posters (requested "..posterCount..")")
+        posterCount = #posters
+    end
+    
+    -- Step 2: For each poster, create a matching cat
+    local usedCatCombos = {}
+    
+    for posterIndex = 1, #posters do
+        local poster = posters[posterIndex]
+        local foundValidCat = false
+        local catAttempts = 0
+        local maxCatAttempts = 100
+        
+        while not foundValidCat and catAttempts < maxCatAttempts do
+            catAttempts += 1
+            
+            -- Start with the poster's traits
+            local catTraits = {}
+            for traitKey, traitValue in pairs(poster.traits) do
+                catTraits[traitKey] = traitValue
+            end
+            
+            -- Fill in remaining traits randomly
+            for i = 1, #TraitKeys do
+                local traitKey = TraitKeys[i]
+                if catTraits[traitKey] == nil then
+                    local possibleValues = TraitValues[traitKey]
+                    local idx = flr(rnd(#possibleValues)) + 1
+                    catTraits[traitKey] = possibleValues[idx]
+                end
+            end
+            
+            -- Build combo key for uniqueness check
+            local catComboKey = ""
+            for i = 1, #TraitKeys do
+                local traitKey = TraitKeys[i]
+                local val = catTraits[traitKey]
+                catComboKey = catComboKey..traitKey..":"..val.name..","
+            end
+            
+            if not usedCatCombos[catComboKey] then
+                -- Verify this cat matches its poster
+                if not poster.isMatch(catTraits) then
+                    printh("bug: cat doesn't match its poster!")
+                else
+                    -- Check if this cat matches exactly one poster (this one)
+                    local matchCount = 0
+                    for i = 1, #posters do
+                        if posters[i].isMatch(catTraits) then
+                            matchCount += 1
+                        end
+                    end
+                    
+                    if matchCount == 1 then
+                        usedCatCombos[catComboKey] = true
+                        add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                        foundValidCat = true
+                    end
+                end
+            end
+        end
+        
+        if not foundValidCat then
+            printh("error: couldn't create valid cat for poster "..posterIndex.." after "..maxCatAttempts.." attempts")
+        end
+    end
+    
+    -- Step 3: Generate additional cats if catCount > posterCount (these won't match any poster)
+    attempts = 0
+    maxAttempts = (catCount - posterCount) * 50
     
     while #cats < catCount and attempts < maxAttempts do
         attempts += 1
@@ -405,115 +517,28 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
             local possibleValues = TraitValues[traitKey]
             local idx = flr(rnd(#possibleValues)) + 1
             catTraits[traitKey] = possibleValues[idx]
-            catComboKey = catComboKey..traitKey..":"..idx..","
+            catComboKey = catComboKey..traitKey..":"..possibleValues[idx].name..","
         end
         
         if not usedCatCombos[catComboKey] then
-            usedCatCombos[catComboKey] = true
-            add(cats, Cat.new(TUXEDO_CAT, catTraits))
+            -- Check if this cat would match any poster
+            local matchesAnyPoster = false
+            for i = 1, #posters do
+                if posters[i].isMatch(catTraits) then
+                    matchesAnyPoster = true
+                    break
+                end
+            end
+            
+            if not matchesAnyPoster then
+                usedCatCombos[catComboKey] = true
+                add(cats, Cat.new(TUXEDO_CAT, catTraits))
+            end
         end
     end
     
     if #cats < catCount then
         printh("warning: only generated "..#cats.." unique cats (requested "..catCount..")")
-        catCount = #cats
-        if posterCount > catCount then
-            posterCount = catCount
-        end
-    end
-    
-    -- Step 2: Create posters for posterCount cats, ensuring each poster matches exactly one cat
-    local usedPosterCombos = {}
-    local catsWithPosters = {}  -- track which cats have valid posters
-    local availableCatIndices = {}
-    for i = 1, catCount do
-        add(availableCatIndices, i)
-    end
-    shuffleArray(availableCatIndices)  -- randomize order
-    
-    local catPoolIndex = 1
-    while #posters < posterCount and catPoolIndex <= #availableCatIndices do
-        local catIndex = availableCatIndices[catPoolIndex]
-        local cat = cats[catIndex]
-        local foundValidPoster = false
-        local posterAttempts = 0
-        local maxPosterAttempts = 100
-        
-        while not foundValidPoster and posterAttempts < maxPosterAttempts do
-            posterAttempts += 1
-            
-            -- Pick random number of traits and random trait keys
-            local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
-            local availableKeys = {}
-            for i = 1, #posterTraitKeys do
-                add(availableKeys, posterTraitKeys[i])
-            end
-            
-            local selectedKeys = {}
-            for i = 1, numTraits do
-                if #availableKeys > 0 then
-                    local idx = flr(rnd(#availableKeys)) + 1
-                    add(selectedKeys, availableKeys[idx])
-                    del(availableKeys, availableKeys[idx])
-                end
-            end
-            
-            -- Build poster traits from this cat's traits
-            local posterTraits = {}
-            local posterComboKey = ""
-            for i = 1, #selectedKeys do
-                local traitKey = selectedKeys[i]
-                posterTraits[traitKey] = cat.traits[traitKey]
-                posterComboKey = posterComboKey..traitKey..":"..cat.traits[traitKey].name..","
-            end
-            
-            -- Check if this poster combo is unique
-            if not usedPosterCombos[posterComboKey] then
-                -- Check if this poster matches exactly one cat (the intended one)
-                local matchingCatIndex = nil
-                local multipleMatches = false
-                
-                for i = 1, #cats do
-                    local testCat = cats[i]
-                    local matches = true
-                    for traitKey, traitValue in pairs(posterTraits) do
-                        if testCat.traits[traitKey] != traitValue then
-                            matches = false
-                            break
-                        end
-                    end
-                    
-                    if matches then
-                        if matchingCatIndex == nil then
-                            matchingCatIndex = i
-                        else
-                            multipleMatches = true
-                            break
-                        end
-                    end
-                end
-                
-                -- Only accept if it matches exactly the intended cat and no others
-                if matchingCatIndex == catIndex and not multipleMatches then
-                    usedPosterCombos[posterComboKey] = true
-                    catsWithPosters[catIndex] = true
-                    local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
-                    local poster = Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits)
-                    add(posters, poster)
-                    foundValidPoster = true
-                end
-            end
-        end
-        
-        if not foundValidPoster then
-            printh("warning: couldn't create unique poster for cat "..catIndex..", skipping")
-        end
-        
-        catPoolIndex += 1
-    end
-    
-    if #posters < posterCount then
-        printh("warning: only created "..#posters.." unique posters (requested "..posterCount..")")
     end
     
     -- Shuffle cats so they're not in the same order as posters

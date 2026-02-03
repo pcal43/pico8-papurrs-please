@@ -82,7 +82,7 @@ WEEKDAYS = {
         cats = 10,
         time = 45,
         traits = { FUR_COLOR, EYE_COLOR },
-        minTraits = 1,
+        minTraits = 2,
         maxTraits = 2
     },
     {
@@ -90,8 +90,8 @@ WEEKDAYS = {
         posters = 10,
         cats = 20,
         time = 60,
-        posterTraits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
-        minTraits = 2,
+        traits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
+        minTraits = 3,
         maxTraits = 3
     },
     {
@@ -99,7 +99,7 @@ WEEKDAYS = {
         posters = 10,
         cats = 20,
         time = 60,
-        posterTraits = { FUR_COLOR, EYE_COLOR },
+        traits = { FUR_COLOR, EYE_COLOR },
         minTraits = 2,
         maxTraits = 2
     },
@@ -108,7 +108,7 @@ WEEKDAYS = {
         posters = 10,
         cats = 20,
         time = 60,
-        posterTraits = { FUR_COLOR, EYE_COLOR },
+        traits = { FUR_COLOR, EYE_COLOR },
         minTraits = 2,
         maxTraits = 2
     }
