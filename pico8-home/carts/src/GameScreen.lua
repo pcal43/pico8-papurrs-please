@@ -422,12 +422,18 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
         end
     end
     
-    -- Step 2: Create posters for posterCount randomly selected cats
+    -- Step 2: Create posters for posterCount cats, ensuring each poster matches exactly one cat
     local usedPosterCombos = {}
-    local catsForPosters = pickUniqueIntegers(posterCount, 1, catCount)
+    local catsWithPosters = {}  -- track which cats have valid posters
+    local availableCatIndices = {}
+    for i = 1, catCount do
+        add(availableCatIndices, i)
+    end
+    shuffleArray(availableCatIndices)  -- randomize order
     
-    for i = 1, posterCount do
-        local catIndex = catsForPosters[i]
+    local catPoolIndex = 1
+    while #posters < posterCount and catPoolIndex <= #availableCatIndices do
+        local catIndex = availableCatIndices[catPoolIndex]
         local cat = cats[catIndex]
         local foundValidPoster = false
         local posterAttempts = 0
@@ -463,27 +469,34 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
             
             -- Check if this poster combo is unique
             if not usedPosterCombos[posterComboKey] then
-                -- Check if this poster would accidentally match any OTHER cat
-                local matchesOtherCat = false
+                -- Check if this poster matches exactly one cat (the intended one)
+                local matchingCatIndex = nil
+                local multipleMatches = false
+                
                 for i = 1, #cats do
-                    if i != catIndex then
-                        local otherCat = cats[i]
-                        local matches = true
-                        for traitKey, traitValue in pairs(posterTraits) do
-                            if otherCat.traits[traitKey] != traitValue then
-                                matches = false
-                                break
-                            end
+                    local testCat = cats[i]
+                    local matches = true
+                    for traitKey, traitValue in pairs(posterTraits) do
+                        if testCat.traits[traitKey] != traitValue then
+                            matches = false
+                            break
                         end
-                        if matches then
-                            matchesOtherCat = true
+                    end
+                    
+                    if matches then
+                        if matchingCatIndex == nil then
+                            matchingCatIndex = i
+                        else
+                            multipleMatches = true
                             break
                         end
                     end
                 end
                 
-                if not matchesOtherCat then
+                -- Only accept if it matches exactly the intended cat and no others
+                if matchingCatIndex == catIndex and not multipleMatches then
                     usedPosterCombos[posterComboKey] = true
+                    catsWithPosters[catIndex] = true
                     local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
                     local poster = Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits)
                     add(posters, poster)
@@ -493,21 +506,14 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
         end
         
         if not foundValidPoster then
-            printh("error: couldn't create valid poster for cat "..catIndex)
-            -- Still add a poster to maintain array structure, even if suboptimal
-            local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
-            local posterTraits = {}
-            -- Use first minTraits traits from the cat
-            local traitIdx = 0
-            for _, traitKey in pairs(posterTraitKeys) do
-                if traitIdx < minTraits then
-                    posterTraits[traitKey] = cat.traits[traitKey]
-                    traitIdx += 1
-                end
-            end
-            local poster = Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits)
-            add(posters, poster)
+            printh("warning: couldn't create unique poster for cat "..catIndex..", skipping")
         end
+        
+        catPoolIndex += 1
+    end
+    
+    if #posters < posterCount then
+        printh("warning: only created "..#posters.." unique posters (requested "..posterCount..")")
     end
     
     -- Shuffle cats so they're not in the same order as posters
