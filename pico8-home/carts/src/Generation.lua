@@ -100,7 +100,7 @@ function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCou
                 end
                 
                 if not usedCatCombos[catComboKey] then
-                    -- Check if this cat matches exactly one existing poster (plus this new one)
+                    -- Check if this cat matches any existing poster
                     local matchCount = 0
                     for i = 1, #posters do
                         if posters[i].isMatch(thisCatTraits) then
@@ -109,9 +109,8 @@ function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCou
                         end
                     end
                     
-                    -- Verify matches the new poster
-                    local tempPoster = {traits = posterTraits, isMatch = Poster.new("temp", true, posterTraits, false).isMatch}
-                    if tempPoster.isMatch(thisCatTraits) then
+                    -- Verify matches the new poster (by construction it should)
+                    if isPosterMatch(posterTraits, thisCatTraits) then
                         matchCount += 1
                     end
                     
