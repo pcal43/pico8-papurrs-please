@@ -133,7 +133,8 @@ WEEKDAYS = {
         time = 20,
         catTraits = { [EYE_COLOR] = { 1, 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1 } },
         posterTraits = { FUR_COLOR },
-        posterTraitCount = 1
+        posterTraitCount = 1,
+        randomizePosterTraitOrder = false
     },
     {
         name = "tuesday",
@@ -142,7 +143,8 @@ WEEKDAYS = {
         time = 30,
         catTraits = { [COLLAR_COLOR] = { 1, 1, 1, 2 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1, 1, 1, 1, 1, 1, 2 } },
         posterTraits = { FUR_COLOR, EYE_COLOR },
-        posterTraitCount = 2
+        posterTraitCount = 2,
+        randomizePosterTraitOrder = false
     },
     {
         name = "wednesday",
@@ -151,7 +153,8 @@ WEEKDAYS = {
         time = 45,
         catTraits = { [STRIPES] = { 1, 1, 1, 2 } },
         posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        posterTraitCount = 3
+        posterTraitCount = 3,
+        randomizePosterTraitOrder = false
     },
     {
         name = "thursday",
@@ -160,7 +163,8 @@ WEEKDAYS = {
         time = 60,
         catTraits = { },
         posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, STRIPES },
-        posterTraitCount = 3
+        posterTraitCount = 3,
+        randomizePosterTraitOrder = true
     },
     {
         name = "friday",
@@ -169,7 +173,8 @@ WEEKDAYS = {
         time = 90,
         catTraits = { },
         posterTraits = { EYE_COLOR, STRIPES, EAR_COLOR },
-        posterTraitCount = 3
+        posterTraitCount = 3,
+        randomizePosterTraitOrder = true
     }
 }
 

@@ -18,7 +18,7 @@
 -- If the 1:1 matching constraint cannot be maintained, and error should be printed 
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
-function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCount, posterTraitKeys)
+function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCount, posterTraitKeys, randomizePosterTraitOrder)
     if catCount < posterCount then
         printh("error: catCount ("..catCount..") < posterCount ("..posterCount..")")
         catCount = posterCount
@@ -110,7 +110,7 @@ function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCou
                     end
                     
                     -- Verify matches the new poster
-                    local tempPoster = {traits = posterTraits, isMatch = Poster.new("temp", true, posterTraits).isMatch}
+                    local tempPoster = {traits = posterTraits, isMatch = Poster.new("temp", true, posterTraits, false).isMatch}
                     if tempPoster.isMatch(thisCatTraits) then
                         matchCount += 1
                     end
@@ -122,7 +122,7 @@ function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCou
                         
                         local posterIndex = #posters + 1
                         local name = requireNonNil(get_cat_name(name_indeces[posterIndex]), "nil cat name")
-                        add(posters, Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits))
+                        add(posters, Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits, randomizePosterTraitOrder))
                         add(cats, Cat.new(TUXEDO_CAT, thisCatTraits))
                         foundValidCat = true
                     end

@@ -1,5 +1,5 @@
 Poster = {}
-Poster.new = function(name, isFemale, traits)
+Poster.new = function(name, isFemale, traits, randomizeTraitOrder)
     local self = {}
     self.name = requireNonNil(name)
     self.isFemale = requireNonNil(isFemale)
@@ -12,13 +12,22 @@ Poster.new = function(name, isFemale, traits)
     
     -- Build trait text once
     self.traitText = ""
-    local first = true
+    
+    -- Collect traits into array
+    local traitArray = {}
     for trait_key, trait_value in pairs(traits) do
-        if not first then
+        add(traitArray, trait_value)
+    end
+    
+    if randomizeTraitOrder then
+        shuffleArray(traitArray)
+    end
+    
+    for i = 1, #traitArray do
+        if i > 1 then
             self.traitText = self.traitText.."\n"
         end
-        self.traitText = self.traitText..trait_value.name
-        first = false
+        self.traitText = self.traitText..traitArray[i].name
     end
 
     function self.update()
