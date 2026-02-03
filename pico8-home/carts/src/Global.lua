@@ -75,10 +75,7 @@ WEEKDAYS = {
         traits = { FUR_COLOR },
         minTraits = 1,
         maxTraits = 1
-    }
-}
-
-SKIPDAYS = {
+    },
     {
         name = "tuesday",
         posters = 8,
