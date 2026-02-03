@@ -134,18 +134,6 @@ WEEKDAYS = {
         catTraits = { [EYE_COLOR] = { 1, 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1 } },
         posterTraits = { FUR_COLOR },
         posterTraitCount = 1
-    }
-}
-
-WEEKDAYSx = {
-    {
-        name = "monday",
-        posterCount = 4,
-        catCount = 5,
-        time = 20,
-        catTraits = { [EYE_COLOR] = { 1, 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 }, [STRIPES] = { 1 } },
-        posterTraits = { FUR_COLOR },
-        posterTraitCount = 1
     },
     {
         name = "tuesday",
