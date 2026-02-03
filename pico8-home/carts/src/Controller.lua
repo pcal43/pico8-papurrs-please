@@ -26,45 +26,18 @@ Controller.new = function()
     
     self.flow = cocreate(function()
         while true do
-            -- Title screen
             self.current_screen = TitleScreen.new()
-                printh("day!")
-
-            while not btnp(BUTTON_X) do yield() end
-                printh("day!")
-
-            self.current_screen = GameScreen.new()
-                printh("day!")
-
-            -- Play through the week
-            for day=1,5 do
-                self.current_screen.startDay(WEEKDAYS[day])
-                while not self.current_screen.isDone() do yield() end
-
-    --            -- Show message
-    --            local msg = self.current_screen.secondsRemaining <= 0 
-    --                and "time's up!" or "all cats found!"
-    --            self.current_screen.message = msg
-    --            for i=1,60 do yield() end
-                
-                -- Review each cat
-    --            for i=1,#self.current_screen.catList do
-    --                local cat = self.current_screen.catList[i]
-    --                if cat.poster then
-    --                    self.current_screen.review_index = i
-    --                    self.current_screen.is_correct = cat.matches(cat.poster.traits)
-    --                    for j=1,90 do yield() end
-    --                end
-    --            end
-                
-                -- Day results
-    --            self.current_screen.show_results = true
-    --            while not btnp(4) do yield() end
+            while btnp(BUTTON_X) do  -- make sure button clears
+                yield() 
             end
-            
-            -- Game over
-    --        self.current_screen = GameOverScreen.new()
-    --        while true do yield() end
+            while not btnp(BUTTON_X) do 
+                yield() 
+            end
+            self.current_screen = GameScreen.new()
+            self.current_screen.startDay()        
+            while not self.current_screen.isDone() do 
+                yield() 
+            end
         end
     end)
     

@@ -4,6 +4,7 @@ GameScreen.new = function()
 
     printh("init1!")
 
+    self.weekdayNumber = 1
     self.centerMessage = nil
     self.scrollPos = 0
     self.targetPos = 1
@@ -13,8 +14,9 @@ GameScreen.new = function()
     self.showPoster = false
     self._last_time = time()
     self.coroutine = nil
-
-    printh("init2!")
+    self.totalCatsThisWeek = 0
+    self.foundCatsThisWeek = 0
+    self.isGameOver = false
 
     function self.draw()
         cls(PEACH) -- offwhite background
@@ -109,35 +111,37 @@ GameScreen.new = function()
         end
     end
 
-    function self.startDay(weekday)
-            printh("startday")
-            self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
-            self.scrollPos = 0
-            self.targetPos = 1
-            self.secondsRemaining = weekday.time
-            self.showCats = false
-            self.showPoster = false                
-            self.showStatusIcons = true
-            self.centerMessage = "\^w"..weekday.name..[[
- 
+    function self.startDay()
+        local weekday = WEEKDAYS[self.weekdayNumber]
+        self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
+        self.scrollPos = 0
+        self.targetPos = 1
+        self.secondsRemaining = weekday.time
+        self.showCats = false
+        self.showPoster = false                
+        self.showStatusIcons = true
+        self.centerMessage = "\^w"..weekday.name..[[
+
 
 tHERE aRE ]]..#self.catList..[[ lOST cATS tODAY. 
 
-mATCH cATS tO tHE pOSTERS to 
 hELP tHEM gET hOME!
 
 rEADY?
 
+
 press ❎ to start]]
-            self.coroutine = cocreate(function()
-                while btn(BUTTON_X) do  -- make sure they release the button
-                    yield()
-                end
-                while not btn(BUTTON_X) do 
-                    yield()
-                end
-                self.startPicking()
-            end)
+        self.coroutine = cocreate(function()
+            while btn(BUTTON_X) do  -- make sure they release the button
+                yield()
+            end
+            while not btn(BUTTON_X) do 
+                yield()
+            end
+        printh("XXXXX")
+
+            self.startPicking()
+        end)
     end
 
     function self.startPicking()
@@ -179,7 +183,7 @@ press ❎ to start]]
                         self.canPress = false
                     end
                 elseif btn(BUTTON_UP) then
-                    if self.canPress then
+                    if self.canPress or false then
                         -- cycle to the next poster
                         if #self.posters > 1 then
                             -- Animate current poster up off screen
@@ -224,7 +228,8 @@ press ❎ to start]]
                 end
                 if self.posters[1] then
                     local pronoun = self.posters[1].isFemale and "hER" or "hIM"
-                    self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
+                    --self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
+                    self.centerMessage = "\139\145: cHANGE cAT     "                    
                     if self.targetPos == self.scrollPos then
                         local selectedCat = self.catList[self.targetPos]
                         if selectedCat and not selectedCat.poster then
@@ -288,7 +293,7 @@ press ❎ to start]]
             end
             -- display score summary
             self.message = ""
-            local scoreMessage = "\^wlost cats: "..#self.catList.."\n\^w    found: "..correct
+            local scoreMessage = "\^w"..WEEKDAYS[self.weekdayNumber].name.."\n\nlost cats: "..#self.catList.."\n    found: "..correct
             if correct == #self.catList then
                 scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
             end
@@ -299,20 +304,55 @@ press ❎ to start]]
             end
             -- wait for button press
             self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
-            while not btn(4) do 
+            while not btn(BUTTON_X) do 
                 yield()
             end
-            self.coroutine = nil
+            
+            -- Update week totals
+            self.totalCatsThisWeek += #self.catList
+            self.foundCatsThisWeek += correct
+            
+
+            if self.weekdayNumber == #WEEKDAYS then
+                self.doEndGame()
+            else
+                self.weekdayNumber += 1
+                self.startDay()
+            end
         end)
     end
 
     function self.doEndGame()
-
+        self.showCats = false
+        self.showPoster = false
+        self.showStatusIcons = false
+        
+        self.coroutine = cocreate(function()
+            -- Display final score
+            local scoreMessage = "\^wend of week!\n\ntOTAL lOST cATS tHIS wEEK:\n"..self.totalCatsThisWeek.."\nyOU fOUND:\n"..self.foundCatsThisWeek
+            
+            if self.foundCatsThisWeek == self.totalCatsThisWeek then
+                scoreMessage = scoreMessage.."\n\n\^wpURRFECT!"
+            end
+            self.centerMessage = scoreMessage
+            for j = 1, 2 * TICKS_PER_SECOND do  
+                yield() 
+            end
+            self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
+            while btn(BUTTON_X) do
+                yield()
+            end
+            while not btn(BUTTON_X) do
+                yield()
+            end
+            self.coroutine = nil
+            self.isGameOver = true
+        end)
     end
 
 
     function self.isDone()
-        return self.coroutine == nil
+        return self.isGameOver
     end
 
     return self

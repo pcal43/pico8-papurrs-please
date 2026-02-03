@@ -71,16 +71,19 @@ WEEKDAYS = {
         name = "monday",
         posters = 5,
         cats = 5,
-        time = 60,
+        time = 30,
         traits = { FUR_COLOR },
         minTraits = 1,
         maxTraits = 1
-    },
+    }
+}
+
+SKIPDAYS = {
     {
         name = "tuesday",
         posters = 8,
         cats = 10,
-        time = 60,
+        time = 45,
         traits = { FUR_COLOR, EYE_COLOR },
         minTraits = 1,
         maxTraits = 2
