@@ -1,3 +1,4 @@
+
 Poster = {}
 Poster.new = function(name, isFemale, traits, randomizeTraitOrder)
     local self = {}
@@ -60,33 +61,30 @@ Poster.new = function(name, isFemale, traits, randomizeTraitOrder)
         printCentered(self.traitText, self.x, trait_y, DARK_BLUE)
     end
 
-    -- return true if all of the traits in this Lost Cat Poster are satisfied by all of the
-    -- traits in the given traits array.  Specifically, this is true if and only if there is
-    -- no TraitKey 'x' such that self.traits[x] does not equal traits[x]
     function self.isMatch(traits)
-        requireNonNil(traits)
-        -- printh("=== isMatch checking for "..self.name.." ===")
-        -- printh("poster has "..mapSize(self.traits).." traits")
-        for trait_key, trait_value in pairs(self.traits) do
-            -- printh("checking trait_key="..trait_key)
-            -- printh("  poster trait_value.name="..trait_value.name)
-            local cat_trait = traits[trait_key]
-            if cat_trait then
-                -- printh("  cat trait_value.name="..cat_trait.name)
-                if cat_trait != trait_value then
-                    -- printh("  MISMATCH!")
-                    return false
-                end
-            else
-                -- printh("  cat has no trait for key "..trait_key)
-                return false
-            end
-        end
-        -- printh("all traits matched!")
-        return true
+        return isPosterMatch(self.traits, traits)
     end
 
     return self
+end
+
+-- Return true if all of the given posterTraits are satisfied by the given catTraits.
+-- Specifically, this is true if and only if there is no TraitKey 'x' such that 
+-- posterTraits[x] does not equal catTraits[x]
+function isPosterMatch(posterTraits, catTraits)
+    requireNonNil(posterTraits)
+    requireNonNil(catTraits)
+    for trait_key, trait_value in pairs(posterTraits) do
+        local cat_trait = catTraits[trait_key]
+        if cat_trait then
+            if cat_trait != trait_value then
+                return false
+            end
+        else
+            return false
+        end
+    end
+    return true
 end
 
 
