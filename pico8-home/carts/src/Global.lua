@@ -50,12 +50,6 @@ TRAIT_SPACING = 1
 TEXT_LINE_HEIGHT = 7
 
 
-FUR_COLOR = 1
-EYE_COLOR = 2
-FUR_PATTERN = 3
-EAR_COLOR = 4
-COLLAR_COLOR = 5
-
 POSTER_ICON = 40
 CAT_ICON = 8
 CLOCK_ICON = 10
@@ -65,53 +59,14 @@ QUESTION_ICON = 46
 BELL_SPRITE = 42
 COLLAR_SPRITE = 43
 
-
-WEEKDAYS = {
-    {
-        name = "monday",
-        posterCount = 4,
-        cats = 5,
-        time = 30,
-        catTraits = { [EYE_COLOR] = { 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 } },
-        posterTraits = { FUR_COLOR },
-        posterTraitCount = 1
-    },
-    {
-        name = "tuesday",
-        posterCount = 5,
-        cats = 8,
-        time = 45,
-        catTraits = { [COLLAR_COLOR] = { 1, 2 }, [EAR_COLOR] = { 1 } },
-        posterTraits = { FUR_COLOR, EYE_COLOR },
-        posterTraitCount = 2
-    },
-    {
-        name = "wednesday",
-        posterCount = 10,
-        cats = 15,
-        time = 45,
-        catTraits = { },
-        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        posterTraitCount = 3
-    },
-    {
-        name = "thursday",
-        posterCount = 15,
-        cats = 25,
-        time = 60,
-        catTraits = { },
-        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, EAR_COLOR },
-        posterTraitCount = 3
-    },
-    {
-        name = "friday",
-        posterCount = 20,
-        cats = 50,
-        time = 90,
-        catTraits = { },
-        posterTraits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
-        posterTraitCount = 3
-    }
+RANK_LEVELS = {
+    { threshold = 50, name = "kitten" },
+    { threshold = 60, name = "mouser" },
+    { threshold = 70, name = "alleycat" },
+    { threshold = 80, name = "prowler" },
+    { threshold = 90, name = "thundercat" },
+    { threshold = 99, name = "aristocat" },
+    { threshold = 100, name = "purrfect" }
 }
 
 

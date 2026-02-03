@@ -346,16 +346,30 @@ press ❎ to start]]
         self.showStatusIcons = false
         
         self.coroutine = cocreate(function()
-            -- Display final score
-            local scoreMessage = "\^wend of week!\n\ntOTAL lOST cATS tHIS wEEK:\n"..self.totalPostersThisWeek.."\nyOU fOUND:\n"..self.foundCatsThisWeek
-            
-            if self.foundCatsThisWeek == self.totalPostersThisWeek then
-                scoreMessage = scoreMessage.."\n\n\^wpURRFECT!"
+            -- Calculate rank
+            local percentage = (self.foundCatsThisWeek / self.totalPostersThisWeek) * 100
+            local rank = "kitten"
+            for i = 1, #RANK_LEVELS do
+                if percentage <= RANK_LEVELS[i].threshold then
+                    rank = RANK_LEVELS[i].name
+                    break
+                end
             end
-            self.centerMessage = scoreMessage
-            for j = 1, 2 * TICKS_PER_SECOND do  
+            
+            -- Display final score
+            local scoreMessage = "\^wend of week!\n\ntOTAL lOST cATS tHIS wEEK:\n"..self.totalPostersThisWeek.."\n\nyOU fOUND:\n"..self.foundCatsThisWeek.."\n\nyOUR rANK:\n\n"
+
+            for j = 1, 3 * TICKS_PER_SECOND do  
                 yield() 
             end
+
+            self.centerMessage = self.centerMessage.."^w"..rank
+
+            for j = 1, 1 * TICKS_PER_SECOND do  
+                yield() 
+            end
+
+
             self.centerMessage = scoreMessage.."\n\npress ❎ to continue"
             while btn(BUTTON_X) do
                 yield()
