@@ -41,7 +41,7 @@ POSTER_PRINT_SPEED = 4
 POSTER_FLOAT_SPEED = 12
 POSTER_WIDTH = 74
 
-PROMPT_TEXT_Y = 32
+PROMPT_TEXT_Y = 40
 
 SOUND_BUZZ = 0
 SOUND_MEOW = 1
@@ -64,23 +64,21 @@ BAD_MATCH_ICON = 14
 QUESTION_ICON = 44
 
 
-MAX_POSTER_CONFIG_ATTEMPTS = 50
-
 WEEKDAYS = {
     {
         name = "monday",
-        posters = 5,
+        posters = 4,
         cats = 5,
-        time = 20,
+        time = 30,
         traits = { FUR_COLOR },
         minTraits = 1,
         maxTraits = 1
     },
     {
         name = "tuesday",
-        posters = 7,
-        cats = 10,
-        time = 30,
+        posters = 5,
+        cats = 8,
+        time = 45,
         traits = { FUR_COLOR, EYE_COLOR },
         minTraits = 2,
         maxTraits = 2

@@ -246,7 +246,7 @@ press ❎ to start]]
     function self.doTimesUp()
         self.coroutine = cocreate(function()
             -- Display final score
-            self.centerMessage = "tIMES UP!  lET'S CHECK"
+            self.centerMessage = "\^wtIMES UP!  lET'S CHECK"
             for j = 1, 3 * TICKS_PER_SECOND do  
                 yield() 
             end
@@ -257,7 +257,7 @@ press ❎ to start]]
     function self.doAllChosen()
         self.coroutine = cocreate(function()
             -- Display final score
-            self.centerMessage = "aLL dONE!"
+            self.centerMessage = "\^waLL dONE!"
             for j = 1, 2 * TICKS_PER_SECOND do  
                 yield() 
             end
@@ -313,7 +313,7 @@ press ❎ to start]]
             local posterCount = WEEKDAYS[self.weekdayNumber].posters
             self.message = ""
             local scoreMessage = "\^w"..WEEKDAYS[self.weekdayNumber].name.."\n\nlost cats: "..posterCount.."\n    found: "..correct
-            if correct == #self.catList then
+            if correct == posterCount then
                 scoreMessage = scoreMessage.."\n\n\^wpurrfect!"
             end
             self.centerMessage = scoreMessage
@@ -409,15 +409,16 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
     local cats = {}
     local name_indeces = pickUniqueIntegers(catCount, 1, CAT_NAME_COUNT)
     
-    -- Step 1: Generate unique posters with random trait combinations
     local usedPosterCombos = {}
-    local attempts = 0
-    local maxAttempts = posterCount * 50
+    local usedCatCombos = {}
+    local pairAttempts = 0
+    local maxPairAttempts = posterCount * 200
     
-    while #posters < posterCount and attempts < maxAttempts do
-        attempts += 1
+    -- Step 1: Generate poster-cat pairs until we have enough
+    while #posters < posterCount and pairAttempts < maxPairAttempts do
+        pairAttempts += 1
         
-        -- Pick random number of traits and random trait keys
+        -- Generate a random poster
         local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
         local availableKeys = {}
         for i = 1, #posterTraitKeys do
@@ -433,7 +434,6 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
             end
         end
         
-        -- Build random poster traits
         local posterTraits = {}
         local posterComboKey = ""
         for i = 1, #selectedKeys do
@@ -445,87 +445,69 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
         end
         
         if not usedPosterCombos[posterComboKey] then
-            usedPosterCombos[posterComboKey] = true
-            local posterIndex = #posters + 1
-            local name = requireNonNil(get_cat_name(name_indeces[posterIndex]), "nil cat name")
-            local poster = Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits)
-            add(posters, poster)
-        end
-    end
-    
-    if #posters < posterCount then
-        printh("warning: only generated "..#posters.." unique posters (requested "..posterCount..")")
-        posterCount = #posters
-    end
-    
-    -- Step 2: For each poster, create a matching cat
-    local usedCatCombos = {}
-    local postersWithCats = {}  -- Track which posters successfully got cats
-    
-    for posterIndex = 1, #posters do
-        local poster = posters[posterIndex]
-        local foundValidCat = false
-        local catAttempts = 0
-        local maxCatAttempts = 100
-        
-        while not foundValidCat and catAttempts < maxCatAttempts do
-            catAttempts += 1
+            -- Try to create a matching cat for this poster
+            local catAttempts = 0
+            local maxCatAttempts = 50
+            local foundValidCat = false
             
-            -- Start with the poster's traits
-            local catTraits = {}
-            for traitKey, traitValue in pairs(poster.traits) do
-                catTraits[traitKey] = traitValue
-            end
-            
-            -- Fill in remaining traits randomly
-            for i = 1, #TraitKeys do
-                local traitKey = TraitKeys[i]
-                if catTraits[traitKey] == nil then
-                    local possibleValues = TraitValues[traitKey]
-                    local idx = flr(rnd(#possibleValues)) + 1
-                    catTraits[traitKey] = possibleValues[idx]
+            while not foundValidCat and catAttempts < maxCatAttempts do
+                catAttempts += 1
+                
+                local catTraits = {}
+                for traitKey, traitValue in pairs(posterTraits) do
+                    catTraits[traitKey] = traitValue
                 end
-            end
-            
-            -- Build combo key for uniqueness check
-            local catComboKey = ""
-            for i = 1, #TraitKeys do
-                local traitKey = TraitKeys[i]
-                local val = catTraits[traitKey]
-                catComboKey = catComboKey..traitKey..":"..val.name..","
-            end
-            
-            if not usedCatCombos[catComboKey] then
-                -- Verify this cat matches its poster
-                if not poster.isMatch(catTraits) then
-                    printh("bug: cat doesn't match its poster!")
-                else
-                    -- Check if this cat matches exactly one poster (this one)
+                
+                for i = 1, #TraitKeys do
+                    local traitKey = TraitKeys[i]
+                    if catTraits[traitKey] == nil then
+                        local possibleValues = TraitValues[traitKey]
+                        local idx = flr(rnd(#possibleValues)) + 1
+                        catTraits[traitKey] = possibleValues[idx]
+                    end
+                end
+                
+                local catComboKey = ""
+                for i = 1, #TraitKeys do
+                    local traitKey = TraitKeys[i]
+                    catComboKey = catComboKey..traitKey..":"..catTraits[traitKey].name..","
+                end
+                
+                if not usedCatCombos[catComboKey] then
+                    -- Check if this cat matches exactly one existing poster (plus this new one)
                     local matchCount = 0
                     for i = 1, #posters do
                         if posters[i].isMatch(catTraits) then
                             matchCount += 1
+                            break
                         end
                     end
                     
+                    -- Verify matches the new poster
+                    local tempPoster = {traits = posterTraits, isMatch = Poster.new("temp", true, posterTraits).isMatch}
+                    if tempPoster.isMatch(catTraits) then
+                        matchCount += 1
+                    end
+                    
                     if matchCount == 1 then
+                        -- Success! Add both poster and cat
+                        usedPosterCombos[posterComboKey] = true
                         usedCatCombos[catComboKey] = true
+                        
+                        local posterIndex = #posters + 1
+                        local name = requireNonNil(get_cat_name(name_indeces[posterIndex]), "nil cat name")
+                        add(posters, Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits))
                         add(cats, Cat.new(TUXEDO_CAT, catTraits))
-                        add(postersWithCats, poster)
                         foundValidCat = true
                     end
                 end
             end
         end
-        
-        if not foundValidCat then
-            printh("warning: couldn't create valid cat for poster "..posterIndex..", removing poster")
-        end
     end
     
-    -- Replace posters array with only posters that have matching cats
-    posters = postersWithCats
-    printh("after filtering: "..#posters.." posters with matching cats")
+    if #posters < posterCount then
+        printh("warning: only generated "..#posters.." poster-cat pairs (requested "..posterCount..") after "..pairAttempts.." attempts")
+    end
     
     -- Step 3: Generate additional cats if catCount > posterCount (these won't match any poster)
     attempts = 0
