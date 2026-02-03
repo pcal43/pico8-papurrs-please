@@ -113,7 +113,7 @@ GameScreen.new = function()
 
     function self.startDay()
         local weekday = WEEKDAYS[self.weekdayNumber]
-        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
+        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.posterCount, weekday.posterTraitCount, weekday.posterTraits)
         self.scrollPos = 0
         self.targetPos = 1
         self.secondsRemaining = weekday.time
@@ -308,7 +308,7 @@ press ❎ to start]]
                 yield()
             end
             -- display score summary
-            local posterCount = WEEKDAYS[self.weekdayNumber].posters
+            local posterCount = WEEKDAYS[self.weekdayNumber].posterCount
             self.message = ""
             local scoreMessage = "\^w"..WEEKDAYS[self.weekdayNumber].name.."\n\nlost cats: "..posterCount.."\n    found: "..correct
             if correct == posterCount then
@@ -395,13 +395,13 @@ end
 -- If the 1:1 matching constraint cannot be maintained, and error should be printed 
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
-function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, posterTraitKeys)
+function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterTraitKeys)
     if catCount < posterCount then
         printh("error: catCount ("..catCount..") < posterCount ("..posterCount..")")
         return {}, {}
     end
     
-    printh("generatePosters: "..posterCount.." posters for "..catCount.." cats, traits "..minTraits.."-"..maxTraits)
+    printh("generatePosters: "..posterCount.." posters for "..catCount.." cats, "..posterTraitCount.." traits per poster")
     
     local posters = {}
     local cats = {}
@@ -416,15 +416,14 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
     while #posters < posterCount and pairAttempts < maxPairAttempts do
         pairAttempts += 1
         
-        -- Generate a random poster
-        local numTraits = minTraits + flr(rnd(maxTraits - minTraits + 1))
+        -- Generate a random poster with exactly posterTraitCount traits
         local availableKeys = {}
         for i = 1, #posterTraitKeys do
             add(availableKeys, posterTraitKeys[i])
         end
         
         local selectedKeys = {}
-        for i = 1, numTraits do
+        for i = 1, posterTraitCount do
             if #availableKeys > 0 then
                 local idx = flr(rnd(#availableKeys)) + 1
                 add(selectedKeys, availableKeys[idx])

@@ -69,53 +69,48 @@ COLLAR_SPRITE = 43
 WEEKDAYS = {
     {
         name = "monday",
-        posters = 4,
+        posterCount = 4,
         cats = 5,
         time = 30,
         catTraits = { FUR_COLOR, EYE_COLOR },
-        traits = { FUR_COLOR },
-        minTraits = 1,
-        maxTraits = 1
+        posterTraits = { FUR_COLOR },
+        posterTraitCount = 1
     },
     {
         name = "tuesday",
-        posters = 5,
+        posterCount = 5,
         cats = 8,
         time = 45,
         catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        traits = { FUR_COLOR, EYE_COLOR },
-        minTraits = 2,
-        maxTraits = 2
+        posterTraits = { FUR_COLOR, EYE_COLOR },
+        posterTraitCount = 2
     },
     {
         name = "wednesday",
-        posters = 10,
+        posterCount = 10,
         cats = 15,
         time = 45,
         catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        traits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        minTraits = 3,
-        maxTraits = 3
+        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        posterTraitCount = 3
     },
     {
         name = "thursday",
-        posters = 15,
+        posterCount = 15,
         cats = 25,
         time = 60,
         catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        traits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, EAR_COLOR },
-        minTraits = 3,
-        maxTraits = 3
+        posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, EAR_COLOR },
+        posterTraitCount = 3
     },
     {
         name = "friday",
-        posters = 20,
+        posterCount = 20,
         cats = 50,
         time = 90,
         catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
-        traits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
-        minTraits = 3,
-        maxTraits = 3
+        posterTraits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
+        posterTraitCount = 3
     }
 }
 
