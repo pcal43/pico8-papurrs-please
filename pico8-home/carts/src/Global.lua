@@ -225,3 +225,11 @@ function mapSize(val)
     end
     return count
 end
+
+function resume(coroutine)
+    local success, err = coresume(coroutine)
+    if not success then
+        printh(err)
+        stop("error encountered, see console")
+    end        
+end

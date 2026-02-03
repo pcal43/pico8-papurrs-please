@@ -14,7 +14,7 @@ Controller.new = function()
         if self.current_screen then
             self.current_screen.update()
         end
-        coresume(self.flow)
+        resume(self.flow)        
     end
     
     function self.draw()
@@ -28,12 +28,17 @@ Controller.new = function()
         while true do
             -- Title screen
             self.current_screen = TitleScreen.new()
+                printh("day!")
+
             while not btnp(BUTTON_X) do yield() end
+                printh("day!")
+
+            self.current_screen = GameScreen.new()
+                printh("day!")
 
             -- Play through the week
             for day=1,5 do
-                -- Create the game screen
-                self.current_screen = GameScreen.new(WEEKDAYS[day])
+                self.current_screen.startDay(WEEKDAYS[day])
                 while not self.current_screen.isDone() do yield() end
 
     --            -- Show message

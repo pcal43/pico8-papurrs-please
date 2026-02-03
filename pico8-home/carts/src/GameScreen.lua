@@ -1,6 +1,8 @@
 local GameScreen = {}
-GameScreen.new = function(weekday)
+GameScreen.new = function()
     local self = {}
+
+    printh("init1!")
 
     self.centerMessage = nil
     self.scrollPos = 0
@@ -9,11 +11,10 @@ GameScreen.new = function(weekday)
     self.showStatusIcons = false
     self.showCats = false
     self.showPoster = false
-    self.secondsRemaining = 60.0
     self._last_time = time()
+    self.coroutine = nil
 
-    self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
-    self.catListSize = 10
+    printh("init2!")
 
     function self.draw()
         cls(PEACH) -- offwhite background
@@ -70,9 +71,9 @@ GameScreen.new = function(weekday)
 
     function self.update()
         if self.coroutine then
-            coresume(self.coroutine)
+            resume(self.coroutine)
         end
-
+ 
         -- update animations - we want to do these in all modes
         if self.showPoster then
             if #self.posters > 0 then
@@ -108,22 +109,35 @@ GameScreen.new = function(weekday)
         end
     end
 
-    function self.startDay()
-        self.coroutine = cocreate(function()
+    function self.startDay(weekday)
+            printh("startday")
+            self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
+            self.scrollPos = 0
+            self.targetPos = 1
+            self.secondsRemaining = weekday.time
             self.showCats = false
             self.showPoster = false                
             self.showStatusIcons = true
-            self.centerMessage = "\^w"..weekday.name.."\n\n\nready?\npress ❎ to start"
-            while btn(BUTTON_X) do  -- make sure they release the button
-                yield()
-            end
-            while not btn(BUTTON_X) do 
-                yield()
-            end
-            self.startPicking()
+            self.centerMessage = "\^w"..weekday.name..[[
+ 
 
-        end)
-        printh("created coroutine!!!!")
+tHERE aRE ]]..#self.catList..[[ lOST cATS tODAY. 
+
+mATCH cATS tO tHE pOSTERS to 
+hELP tHEM gET hOME!
+
+rEADY?
+
+press ❎ to start]]
+            self.coroutine = cocreate(function()
+                while btn(BUTTON_X) do  -- make sure they release the button
+                    yield()
+                end
+                while not btn(BUTTON_X) do 
+                    yield()
+                end
+                self.startPicking()
+            end)
     end
 
     function self.startPicking()
@@ -292,12 +306,14 @@ GameScreen.new = function(weekday)
         end)
     end
 
+    function self.doEndGame()
+
+    end
+
 
     function self.isDone()
         return self.coroutine == nil
     end
-
-    self.startDay()
 
     return self
 end
@@ -472,6 +488,6 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
     -- Shuffle cats so they're not in the same order as posters
     shuffleArray(cats)
     
-        printh("generateposters END")
+    printh("generateposters END")
     return posters, cats
 end
