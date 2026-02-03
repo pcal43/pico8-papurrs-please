@@ -113,7 +113,7 @@ GameScreen.new = function()
 
     function self.startDay()
         local weekday = WEEKDAYS[self.weekdayNumber]
-        self.posters, self.catList = generatePostersAndCats(weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
+        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.posters, weekday.minTraits, weekday.maxTraits, weekday.traits)
         self.scrollPos = 0
         self.targetPos = 1
         self.secondsRemaining = weekday.time
@@ -378,19 +378,24 @@ end
 -- If the 1:1 matching constraint cannot be maintained, and error should be printed 
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
-function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
-    printh("generatePosters x "..tostr(count).." traits "..tostr(minTraits).."-"..tostr(maxTraits))
+function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, posterTraitKeys)
+    if catCount < posterCount then
+        printh("error: catCount ("..catCount..") < posterCount ("..posterCount..")")
+        return {}, {}
+    end
+    
+    printh("generatePosters: "..posterCount.." posters for "..catCount.." cats, traits "..minTraits.."-"..maxTraits)
     
     local posters = {}
     local cats = {}
-    local name_indeces = pickUniqueIntegers(count, 1, CAT_NAME_COUNT)
+    local name_indeces = pickUniqueIntegers(catCount, 1, CAT_NAME_COUNT)
     
     -- Step 1: Generate unique cats with random trait combinations
     local usedCatCombos = {}
     local attempts = 0
-    local maxAttempts = count * 50
+    local maxAttempts = catCount * 50
     
-    while #cats < count and attempts < maxAttempts do
+    while #cats < catCount and attempts < maxAttempts do
         attempts += 1
         
         local catTraits = {}
@@ -409,15 +414,20 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
         end
     end
     
-    if #cats < count then
-        printh("warning: only generated "..#cats.." unique cats (requested "..count..")")
-        count = #cats
+    if #cats < catCount then
+        printh("warning: only generated "..#cats.." unique cats (requested "..catCount..")")
+        catCount = #cats
+        if posterCount > catCount then
+            posterCount = catCount
+        end
     end
     
-    -- Step 2: For each cat, create a poster that matches only that cat
+    -- Step 2: Create posters for posterCount randomly selected cats
     local usedPosterCombos = {}
+    local catsForPosters = pickUniqueIntegers(posterCount, 1, catCount)
     
-    for catIndex = 1, #cats do
+    for i = 1, posterCount do
+        local catIndex = catsForPosters[i]
         local cat = cats[catIndex]
         local foundValidPoster = false
         local posterAttempts = 0
@@ -475,7 +485,8 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
                 if not matchesOtherCat then
                     usedPosterCombos[posterComboKey] = true
                     local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
-                    add(posters, Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits))
+                    local poster = Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits)
+                    add(posters, poster)
                     foundValidPoster = true
                 end
             end
@@ -483,6 +494,19 @@ function generatePostersAndCats(count, minTraits, maxTraits, posterTraitKeys)
         
         if not foundValidPoster then
             printh("error: couldn't create valid poster for cat "..catIndex)
+            -- Still add a poster to maintain array structure, even if suboptimal
+            local name = requireNonNil(get_cat_name(name_indeces[catIndex]), "nil cat name")
+            local posterTraits = {}
+            -- Use first minTraits traits from the cat
+            local traitIdx = 0
+            for _, traitKey in pairs(posterTraitKeys) do
+                if traitIdx < minTraits then
+                    posterTraits[traitKey] = cat.traits[traitKey]
+                    traitIdx += 1
+                end
+            end
+            local poster = Poster.new(name, name_indeces[catIndex] < CAT_NAME_FIRST_MALE, posterTraits)
+            add(posters, poster)
         end
     end
     
