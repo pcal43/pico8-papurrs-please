@@ -123,7 +123,7 @@ GameScreen.new = function()
         self.centerMessage = "\^w"..weekday.name..[[
 
 
-tHERE aRE ]]..#self.catList..[[ lOST cATS tODAY. 
+tHERE aRE ]]..#self.posters..[[ lOST cATS tODAY. 
 
 hELP tHEM gET hOME!
 
@@ -151,7 +151,7 @@ press ❎ to start]]
         self.coroutine = cocreate(function()
             while true do
                 if self.posters and #self.posters < 1 then
-                    self.startChecking()
+                    self.doAllChosen()
                     return
                 end
 
@@ -164,6 +164,7 @@ press ❎ to start]]
                         self.secondsRemaining = self.secondsRemaining - dt
                     else
                         self.secondsRemaining = 0
+                        self.doTimesUp()
                     end
                 end
 
@@ -237,23 +238,40 @@ press ❎ to start]]
                         end
                     end
                 end
-            yield()
-
+                yield()
             end
         end)
     end
 
-    function self.startChecking()
+    function self.doTimesUp()
+        self.coroutine = cocreate(function()
+            -- Display final score
+            self.centerMessage = "tIMES UP!  lET'S CHECK"
+            for j = 1, 3 * TICKS_PER_SECOND do  
+                yield() 
+            end
+            self.doChecks()
+        end)
+    end    
+
+    function self.doAllChosen()
+        self.coroutine = cocreate(function()
+            -- Display final score
+            self.centerMessage = "aLL dONE!"
+            for j = 1, 2 * TICKS_PER_SECOND do  
+                yield() 
+            end
+            self.doChecks()
+        end)
+    end        
+
+    function self.doChecks()
+        self.showStatusIcons = false
+        self.showPoster = false
         self.coroutine = cocreate(function()
             local correct = 0
             self.showStatusIcons = false
-
-            self.centerMessage = "dONE.  lET'S cHECK!"
-            for j = 2, 1 * TICKS_PER_SECOND do  
-                yield() 
-            end
             self.centerMessage = nil
-
             for i = 1, #self.catList do
                 self.targetPos = i
                 while self.scrollPos != self.targetPos do -- wait for scrolling to finish
@@ -442,6 +460,7 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
     
     -- Step 2: For each poster, create a matching cat
     local usedCatCombos = {}
+    local postersWithCats = {}  -- Track which posters successfully got cats
     
     for posterIndex = 1, #posters do
         local poster = posters[posterIndex]
@@ -492,6 +511,7 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
                     if matchCount == 1 then
                         usedCatCombos[catComboKey] = true
                         add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                        add(postersWithCats, poster)
                         foundValidCat = true
                     end
                 end
@@ -499,9 +519,13 @@ function generatePostersAndCats(catCount, posterCount, minTraits, maxTraits, pos
         end
         
         if not foundValidCat then
-            printh("error: couldn't create valid cat for poster "..posterIndex.." after "..maxCatAttempts.." attempts")
+            printh("warning: couldn't create valid cat for poster "..posterIndex..", removing poster")
         end
     end
+    
+    -- Replace posters array with only posters that have matching cats
+    posters = postersWithCats
+    printh("after filtering: "..#posters.." posters with matching cats")
     
     -- Step 3: Generate additional cats if catCount > posterCount (these won't match any poster)
     attempts = 0
