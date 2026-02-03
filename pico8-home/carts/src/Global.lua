@@ -72,7 +72,7 @@ WEEKDAYS = {
         posterCount = 4,
         cats = 5,
         time = 30,
-        catTraits = { FUR_COLOR, EYE_COLOR },
+        catTraits = { [EYE_COLOR] = { 1, 2 }, [COLLAR_COLOR] = { 1 }, [EAR_COLOR] = { 1 } },
         posterTraits = { FUR_COLOR },
         posterTraitCount = 1
     },
@@ -81,7 +81,7 @@ WEEKDAYS = {
         posterCount = 5,
         cats = 8,
         time = 45,
-        catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        catTraits = { [COLLAR_COLOR] = { 1, 2 }, [EAR_COLOR] = { 1 } },
         posterTraits = { FUR_COLOR, EYE_COLOR },
         posterTraitCount = 2
     },
@@ -90,7 +90,7 @@ WEEKDAYS = {
         posterCount = 10,
         cats = 15,
         time = 45,
-        catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        catTraits = { },
         posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
         posterTraitCount = 3
     },
@@ -99,7 +99,7 @@ WEEKDAYS = {
         posterCount = 15,
         cats = 25,
         time = 60,
-        catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        catTraits = { },
         posterTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR, EAR_COLOR },
         posterTraitCount = 3
     },
@@ -108,7 +108,7 @@ WEEKDAYS = {
         posterCount = 20,
         cats = 50,
         time = 90,
-        catTraits = { FUR_COLOR, EYE_COLOR, COLLAR_COLOR },
+        catTraits = { },
         posterTraits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
         posterTraitCount = 3
     }

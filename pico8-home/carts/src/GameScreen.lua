@@ -113,7 +113,7 @@ GameScreen.new = function()
 
     function self.startDay()
         local weekday = WEEKDAYS[self.weekdayNumber]
-        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.posterCount, weekday.posterTraitCount, weekday.posterTraits)
+        self.posters, self.catList = generatePostersAndCats(weekday.cats, weekday.catTraits, weekday.posterCount, weekday.posterTraitCount, weekday.posterTraits)
         self.scrollPos = 0
         self.targetPos = 1
         self.secondsRemaining = weekday.time
@@ -395,7 +395,7 @@ end
 -- If the 1:1 matching constraint cannot be maintained, and error should be printed 
 -- and the 'count' reduced to the point where the constraints can be satisfied.
 
-function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterTraitKeys)
+function generatePostersAndCats(catCount, catTraits, posterCount, posterTraitCount, posterTraitKeys)
     if catCount < posterCount then
         printh("error: catCount ("..catCount..") < posterCount ("..posterCount..")")
         return {}, {}
@@ -450,31 +450,37 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
             while not foundValidCat and catAttempts < maxCatAttempts do
                 catAttempts += 1
                 
-                local catTraits = {}
+                local thisCatTraits = {}
                 for traitKey, traitValue in pairs(posterTraits) do
-                    catTraits[traitKey] = traitValue
+                    thisCatTraits[traitKey] = traitValue
                 end
                 
                 for i = 1, #TraitKeys do
                     local traitKey = TraitKeys[i]
-                    if catTraits[traitKey] == nil then
+                    if thisCatTraits[traitKey] == nil then
                         local possibleValues = TraitValues[traitKey]
-                        local idx = flr(rnd(#possibleValues)) + 1
-                        catTraits[traitKey] = possibleValues[idx]
+                        local allowedIndices = catTraits[traitKey]
+                        if allowedIndices then
+                            local idx = allowedIndices[flr(rnd(#allowedIndices)) + 1]
+                            thisCatTraits[traitKey] = possibleValues[idx]
+                        else
+                            local idx = flr(rnd(#possibleValues)) + 1
+                            thisCatTraits[traitKey] = possibleValues[idx]
+                        end
                     end
                 end
                 
                 local catComboKey = ""
                 for i = 1, #TraitKeys do
                     local traitKey = TraitKeys[i]
-                    catComboKey = catComboKey..traitKey..":"..catTraits[traitKey].name..","
+                    catComboKey = catComboKey..traitKey..":"..thisCatTraits[traitKey].name..","
                 end
                 
                 if not usedCatCombos[catComboKey] then
                     -- Check if this cat matches exactly one existing poster (plus this new one)
                     local matchCount = 0
                     for i = 1, #posters do
-                        if posters[i].isMatch(catTraits) then
+                        if posters[i].isMatch(thisCatTraits) then
                             matchCount += 1
                             break
                         end
@@ -482,7 +488,7 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
                     
                     -- Verify matches the new poster
                     local tempPoster = {traits = posterTraits, isMatch = Poster.new("temp", true, posterTraits).isMatch}
-                    if tempPoster.isMatch(catTraits) then
+                    if tempPoster.isMatch(thisCatTraits) then
                         matchCount += 1
                     end
                     
@@ -494,7 +500,7 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
                         local posterIndex = #posters + 1
                         local name = requireNonNil(get_cat_name(name_indeces[posterIndex]), "nil cat name")
                         add(posters, Poster.new(name, name_indeces[posterIndex] < CAT_NAME_FIRST_MALE, posterTraits))
-                        add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                        add(cats, Cat.new(TUXEDO_CAT, thisCatTraits))
                         foundValidCat = true
                     end
                 end
@@ -513,13 +519,19 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
     while #cats < catCount and attempts < maxAttempts do
         attempts += 1
         
-        local catTraits = {}
+        local thisCatTraits = {}
         local catComboKey = ""
         for i = 1, #TraitKeys do
             local traitKey = TraitKeys[i]
             local possibleValues = TraitValues[traitKey]
-            local idx = flr(rnd(#possibleValues)) + 1
-            catTraits[traitKey] = possibleValues[idx]
+            local allowedIndices = catTraits[traitKey]
+            local idx
+            if allowedIndices then
+                idx = allowedIndices[flr(rnd(#allowedIndices)) + 1]
+            else
+                idx = flr(rnd(#possibleValues)) + 1
+            end
+            thisCatTraits[traitKey] = possibleValues[idx]
             catComboKey = catComboKey..traitKey..":"..possibleValues[idx].name..","
         end
         
@@ -527,7 +539,7 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
             -- Check if this cat would match any poster
             local matchesAnyPoster = false
             for i = 1, #posters do
-                if posters[i].isMatch(catTraits) then
+                if posters[i].isMatch(thisCatTraits) then
                     matchesAnyPoster = true
                     break
                 end
@@ -535,7 +547,7 @@ function generatePostersAndCats(catCount, posterCount, posterTraitCount, posterT
             
             if not matchesAnyPoster then
                 usedCatCombos[catComboKey] = true
-                add(cats, Cat.new(TUXEDO_CAT, catTraits))
+                add(cats, Cat.new(TUXEDO_CAT, thisCatTraits))
             end
         end
     end
