@@ -71,16 +71,16 @@ WEEKDAYS = {
         name = "monday",
         posters = 5,
         cats = 5,
-        time = 30,
+        time = 20,
         traits = { FUR_COLOR },
         minTraits = 1,
         maxTraits = 1
     },
     {
         name = "tuesday",
-        posters = 8,
+        posters = 7,
         cats = 10,
-        time = 45,
+        time = 30,
         traits = { FUR_COLOR, EYE_COLOR },
         minTraits = 2,
         maxTraits = 2
@@ -88,29 +88,29 @@ WEEKDAYS = {
     {
         name = "wednesday",
         posters = 10,
-        cats = 20,
-        time = 60,
+        cats = 15,
+        time = 45,
         traits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
         minTraits = 3,
         maxTraits = 3
     },
     {
         name = "thursday",
-        posters = 10,
-        cats = 20,
+        posters = 15,
+        cats = 25,
         time = 60,
-        traits = { FUR_COLOR, EYE_COLOR },
-        minTraits = 2,
-        maxTraits = 2
+        traits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
+        minTraits = 3,
+        maxTraits = 3
     },
     {
         name = "friday",
-        posters = 10,
-        cats = 20,
-        time = 60,
-        traits = { FUR_COLOR, EYE_COLOR },
-        minTraits = 2,
-        maxTraits = 2
+        posters = 20,
+        cats = 50,
+        time = 90,
+        traits = { FUR_COLOR, EYE_COLOR, EAR_COLOR },
+        minTraits = 3,
+        maxTraits = 3
     }
 }
 
