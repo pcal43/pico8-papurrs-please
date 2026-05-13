@@ -6,9 +6,8 @@ Controller.new = function()
     self.current_screen = nil
 
     function self.init()
-        cartdata("lost-cats") -- set the key for persistent storage
+        cartdata("papurrs-please") -- set the key for persistent storage
     end
-
 
     function self.update()
         if self.current_screen then
