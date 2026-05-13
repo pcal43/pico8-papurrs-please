@@ -2,8 +2,6 @@ local GameScreen = {}
 GameScreen.new = function()
     local self = {}
 
-    printh("init1!")
-
     self.weekdayNumber = 1
     self.centerMessage = nil
     self.scrollPos = 0
@@ -16,6 +14,7 @@ GameScreen.new = function()
     self.totalPostersThisWeek = 0
     self.foundCatsThisWeek = 0
     self.isGameOver = false
+    self.returningPoster = nil
 
     function self.draw()
         cls(PEACH) -- offwhite background
@@ -64,6 +63,11 @@ GameScreen.new = function()
             end
         end
 
+        -- draw returning poster (animating off screen after undo)
+        if self.returningPoster then
+            self.returningPoster.draw()
+        end
+
         -- draw center message if present
         if self.centerMessage then
             printCentered(self.centerMessage, SCREEN_WIDTH/2, PROMPT_TEXT_Y, DARK_BLUE)
@@ -108,6 +112,18 @@ GameScreen.new = function()
                 end
             end
         end
+
+        -- animate returning poster (undo) until it leaves the top of the screen
+        if self.returningPoster then
+            self.returningPoster.update()
+            if self.returningPoster.y <= self.returningPoster.targetY then
+                self.returningPoster.y = POSTER_NEW_DISPLAY_POS
+                self.returningPoster.targetY = POSTER_TOP_DISPLAY_POS
+                self.returningPoster.speed = POSTER_PRINT_SPEED
+                add(self.posters, self.returningPoster)
+                self.returningPoster = nil
+            end
+        end
     end
 
     function self.startDay()
@@ -148,7 +164,7 @@ press ❎ to start]]
         self._last_time = time()
         self.coroutine = cocreate(function()
             while true do
-                if self.posters and #self.posters < 1 then
+                if self.posters and #self.posters < 1 and not self.returningPoster then
                     self.doAllChosen()
                     return
                 end
@@ -171,6 +187,7 @@ press ❎ to start]]
                     if self.canPress then
                         if self.targetPos > 1 then
                             self.targetPos = self.targetPos - 1
+                            sfx(SOUND_LEFT)
                         end
                         self.canPress = false
                     end
@@ -178,22 +195,21 @@ press ❎ to start]]
                     if self.canPress then
                         if self.targetPos < #self.catList then
                             self.targetPos = self.targetPos + 1
+                            sfx(SOUND_RIGHT)
                         end
                         self.canPress = false
                     end
                 elseif btn(BUTTON_UP) then
-                    if self.canPress or false then
-                        -- cycle to the next poster
-                        if #self.posters > 1 then
-                            -- Animate current poster up off screen
-                            self.posters[1].targetY = POSTER_NEW_DISPLAY_POS - 20
-                            -- Move it to the back of the queue
-                            local currentPoster = self.posters[1]
-                            del(self.posters, currentPoster)
-                            add(self.posters, currentPoster)
-                            -- Animate the next poster down
-                            self.posters[1].y = POSTER_NEW_DISPLAY_POS
-                            self.posters[1].targetY = POSTER_TOP_DISPLAY_POS
+                    if self.canPress then
+                        local selectedCat = self.catList[self.targetPos]
+                        if selectedCat and selectedCat.poster then
+                            -- undo: detach poster from cat and animate it off the top
+                            local undoPoster = selectedCat.poster
+                            undoPoster.speed = POSTER_FLOAT_SPEED
+                            undoPoster.targetY = POSTER_NEW_DISPLAY_POS
+                            selectedCat.poster = nil
+                            self.returningPoster = undoPoster
+                            sfx(SOUND_UNDO)
                         end
                         self.canPress = false
                     end
@@ -210,6 +226,7 @@ press ❎ to start]]
                             selectedCat.poster = self.posters[1]
                             selectedCat.poster.speed = POSTER_FLOAT_SPEED
                             selectedCat.poster.targetY = POSTER_BOT_DISPLAY_POS
+                            sfx(SOUND_RUFFLE)
                             
                             -- Remove the poster from the list
                             del(self.posters, self.posters[1])
@@ -225,13 +242,15 @@ press ❎ to start]]
                 else
                     self.canPress = true
                 end
-                if self.posters[1] then
-                    local pronoun = self.posters[1].isFemale and "hER" or "hIM"
-                    --self.centerMessage = " \148: cHANGE pOSTER\n\139\145: cHANGE cAT     "
-                    self.centerMessage = "\139\145: cHANGE cAT     "                    
+                if self.posters[1] or self.returningPoster then
+                    self.centerMessage = "\139\145: cHANGE cAT     "
                     if self.targetPos == self.scrollPos then
                         local selectedCat = self.catList[self.targetPos]
-                        if selectedCat and not selectedCat.poster then
+                        if selectedCat and selectedCat.poster then
+                            local undoPronoun = selectedCat.poster.isFemale and "hER" or "hIM"
+                            self.centerMessage = self.centerMessage.."\n \148: uNDO!"
+                        elseif selectedCat and not selectedCat.poster and self.posters[1] then
+                            local pronoun = self.posters[1].isFemale and "hER" or "hIM"
                             self.centerMessage = self.centerMessage.."\n \131: tHIS iS "..pronoun.."! "
                         end
                     end
@@ -243,6 +262,7 @@ press ❎ to start]]
 
     function self.doTimesUp()
         self.coroutine = cocreate(function()
+            sfx(SOUND_TIMESUP)
             self.centerMessage = "\^wtimes up!"
             for j = 1, 3 * TICKS_PER_SECOND do  
                 yield() 
@@ -294,7 +314,7 @@ press ❎ to start]]
                     else
                         cat.adornmentSpriteId = BAD_MATCH_ICON
                         sfx(SOUND_BUZZ)
-                        for j = 1, 2 * TICKS_PER_SECOND do 
+                        for j = 1, .5 * TICKS_PER_SECOND do 
                             yield() 
                         end
                     end
