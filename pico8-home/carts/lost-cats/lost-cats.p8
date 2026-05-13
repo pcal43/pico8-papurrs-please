@@ -4,6 +4,7 @@ __lua__
 
 
 
+#include version.lua
 #include ../src/Global.lua
 #include ../src/Traits.lua
 #include ../src/Poster.lua
